@@ -1,4 +1,5 @@
 const app = require('./app');
+const db = require('./config/db')
 
 const port = 4000;
 
@@ -7,5 +8,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-      console.log(`Server is running on port http://localhost:${port}`);
+      console.log(`Server is running on http://localhost:${port}`);
 });
