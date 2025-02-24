@@ -78,12 +78,7 @@ class _MainHeaderWidgetState extends State<MainHeaderWidget> {
               ),
               ProfileButtonWidget(
                 username: "OwnerTambak",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Profile()),
-                  );
-                },
+                role: "Admin",
               ),
             ],
           ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widget/background_widget.dart';
 import '../widget/app_bar_widget.dart';
 import '../widget/info_user_widget.dart';
-import '../widget/filled_button_widget.dart';
+import '../widget/button_widget.dart';
 import 'edit_profile.dart';
 import 'login.dart'; // Import FilledButtonWidget
 
@@ -48,40 +48,6 @@ class Profile extends StatelessWidget {
                 InfoUserWidget(label: "Role", info: "Admin"),
                 const SizedBox(height: 12),
                 InfoUserWidget(label: "Tanggal Daftar", info: "06/02/2025"),
-
-                const SizedBox(height: 50), // Jarak antara info user dan tombol
-
-                // **Tombol Edit & Logout**
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // **Tombol Edit (Kiri, padding kiri 40)**
-                    Padding(
-                      padding: const EdgeInsets.only(left: 40),
-                      child: FilledButtonWidget(
-                        text: "Edit",
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) => const EditProfile()),
-                          );
-                        },
-                      ),
-                    ),
-
-                    // **Tombol Logout (Kanan, padding kanan 40)**
-                    Padding(
-                      padding: const EdgeInsets.only(right: 40),
-                      child: FilledButtonWidget(
-                        text: "Logout",
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) => const Login()),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),

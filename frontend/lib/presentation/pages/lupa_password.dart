@@ -7,7 +7,7 @@ import 'package:gap/gap.dart';
 import '../widget/background_widget.dart';
 import '../widget/placeholder_input.dart';
 import '../widget/otp_input_widget.dart';
-import '../widget/filled_button_widget.dart';
+import '../widget/button_widget.dart';
 import '../widget/text_button_widget.dart';
 
 class LupaPassword extends StatelessWidget {

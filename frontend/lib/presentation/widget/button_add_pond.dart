@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../color/color_constant.dart';
 
-class FilledButtonWidget extends StatelessWidget {
+class ButtonAddPond extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isFullWidth;
 
-  const FilledButtonWidget({
+  const ButtonAddPond({
     super.key,
     required this.text,
     required this.onPressed,
@@ -24,11 +24,12 @@ class FilledButtonWidget extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: ColorConstant.primary, // Warna tombol utama
           foregroundColor: Colors.white, // Warna teks
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6), // Padding sama dengan FilledButtonWidget
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5), // Border radius sama
           ),
-          elevation: 1, // Efek shadow untuk memberikan tampilan "terangkat"
+          elevation: 1, // Efek shadow
+          minimumSize: const Size(0, 0),
         ).copyWith(
           overlayColor: WidgetStateProperty.resolveWith<Color?>(
                 (Set<WidgetState> states) {
@@ -43,7 +44,7 @@ class FilledButtonWidget extends StatelessWidget {
           text,
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: 13, // Font size sama dengan FilledButtonWidget
             color: Colors.white,
           ),
         ),

@@ -1,56 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_app/presentation/widget/profile_menu_widget.dart'; // Import widget baru
 
 class ProfileButtonWidget extends StatelessWidget {
   final String username;
-  final VoidCallback onTap;
+  final String role;
 
   const ProfileButtonWidget({
     super.key,
     required this.username,
-    required this.onTap,
+    required this.role,
   });
+
+  void _showProfileMenu(BuildContext context, RenderBox buttonBox) {
+    final buttonPosition = buttonBox.localToGlobal(Offset.zero);
+    final buttonWidth = buttonBox.size.width;
+
+    showDialog(
+      context: context,
+      builder: (context) => ProfileMenuWidget(
+        leftPosition: buttonPosition.dx,
+        topPosition: buttonPosition.dy + buttonBox.size.height + 5,
+        buttonWidth: buttonWidth,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Mengambil ukuran layar
+    final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTap: onTap, // Navigasi ke halaman profil
+      onTap: () {
+        RenderBox box = context.findRenderObject() as RenderBox;
+        _showProfileMenu(context, box);
+      },
       child: Container(
-        width: size.width * 0.4, // Lebar 45% layar
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8, // Padding kiri-kanan tetap 10
-          vertical: 4,
-        ),
+        width: size.width * 0.45,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF316B94), // Warna background biru
-          borderRadius: BorderRadius.circular(15), // Border melengkung
-          border: Border.all(color: Colors.white, width: 1), // Outline putih
+          color: const Color(0xFF316B94),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white, width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // **Gambar Profil**
             ClipOval(
               child: Image.asset(
-                'assets/images/Logo-App.png', // Ganti dengan logo profil
-                width: size.width * 0.1, // Lebar gambar responsif (~9% layar)
-                height: size.width * 0.1, // Tinggi gambar responsif
+                'assets/images/Logo-App.png',
+                width: size.width * 0.1,
+                height: size.width * 0.1,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(width: 5), // Jarak antara gambar dan teks
+            const SizedBox(width: 5),
 
-            // **Username**
+            // **Username & Role**
             Expanded(
-              child: Text(
-                username,
-                style: const TextStyle(
-                  fontSize: 13, // Ukuran teks username tetap 12
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                overflow: TextOverflow.ellipsis, // Jika terlalu panjang, jadi "..."
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    role,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white70,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ],

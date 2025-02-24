@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/pages/profile.dart';
 import '../widget/background_widget.dart';
 import '../widget/app_bar_widget.dart';
-import '../widget/filled_button_widget.dart';
+import '../widget/button_widget.dart';
 import '../widget/standart_input.dart';
 
 class EditProfile extends StatelessWidget {
@@ -16,9 +16,7 @@ class EditProfile extends StatelessWidget {
       appBar: AppBarWidget(
         title: "Edit Profil",
         onBackPress: () {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Profile()),
-          );
+          Navigator.pop(context);
         },
       ),
       body: Stack(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import '../widget/background_widget.dart';
-import '../widget/filled_button_widget.dart';
+import '../widget/button_widget.dart';
 import '../widget/placeholder_input.dart';
 import 'login.dart'; // Import halaman login untuk navigasi
 import 'package:google_fonts/google_fonts.dart';
