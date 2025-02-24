@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_app/presentation/pages/beranda.dart';
+import 'package:frontend_app/presentation/pages/login.dart';
+import 'package:frontend_app/presentation/pages/monitoring.dart';
+import 'package:frontend_app/presentation/pages/profile.dart';
 import 'package:frontend_app/presentation/pages/splash_screen.dart';
 
 void main() {
