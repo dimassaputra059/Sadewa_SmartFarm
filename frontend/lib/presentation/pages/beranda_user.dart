@@ -5,17 +5,18 @@ import '../blocks/main_header_widget.dart';
 import '../widget/button_add.dart';
 import '../widget/navigasi_beranda.dart';
 import '../widget/background_widget.dart';
+import '../widget/navigasi_beranda_user.dart';
 import 'edit_kolam.dart';
 import 'manajemen_user.dart';
 
-class Beranda extends StatefulWidget {
-  const Beranda({super.key});
+class BerandaUser extends StatefulWidget {
+  const BerandaUser({super.key});
 
   @override
-  State<Beranda> createState() => _BerandaState();
+  State<BerandaUser> createState() => _BerandaUserState();
 }
 
-class _BerandaState extends State<Beranda> {
+class _BerandaUserState extends State<BerandaUser> {
   List<Map<String, String>> pondList = [
     {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
     {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
@@ -34,7 +35,6 @@ class _BerandaState extends State<Beranda> {
       ),
     );
   }
-
 
   void _onDeletePond(String pondName) {
     print("Hapus $pondName");
@@ -110,42 +110,23 @@ class _BerandaState extends State<Beranda> {
                           childAspectRatio: 1.2,
                         ),
                         itemCount: pondList.length,
-                          itemBuilder: (context, index) {
-                            var pond = pondList[index];
-                            return PondTile(
-                              pondName: pond["name"]!,
-                              status: pond["status"]!,
-                              date: pond["date"]!,
-                              showMenu: true,
-                              pondData: pond, // Kirim seluruh data kolam
-                              onEdit: (selectedPond) => _onEditPond(context, selectedPond), // Ubah menjadi fungsi dengan parameter
-                              onDelete: () => _onDeletePond(pond["name"]!),
-                            );
-                          }
-
+                        itemBuilder: (context, index) {
+                          var pond = pondList[index];
+                          return PondTile(
+                            pondName: pond["name"]!,
+                            status: pond["status"]!,
+                            date: pond["date"]!,
+                            pondData: pond,
+                            showMenu: false, // Tidak menampilkan menu titik tiga
+                            onEdit: (selectedPond) => _onEditPond(context, selectedPond),
+                            onDelete: () => _onDeletePond(pond["name"]!),
+                          );
+                        },
                       );
                     },
                   ),
                 ),
               ],
-            ),
-          ),
-
-          // **Navigasi Beranda**
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: NavigasiBeranda(
-              selectedIndex: 0,
-              onTap: (index) {
-                if (index == 1) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ManajemenUser()),
-                  );
-                }
-              },
             ),
           ),
         ],

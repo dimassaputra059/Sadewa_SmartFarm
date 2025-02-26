@@ -23,12 +23,26 @@ class OutlinedButtonWidget extends StatelessWidget {
       width: isFullWidth ? double.infinity : null, // Lebar penuh jika isFullWidth true
       child: OutlinedButton(
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          minimumSize: Size.zero, // Tidak membatasi ukuran minimum
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), // Padding kecil
-          side: BorderSide(color: borderColor, width: 1), // Border
-          foregroundColor: textColor, // Warna teks
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)), // Sudut lebih halus
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(Size.zero), // Tidak membatasi ukuran minimum
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          ),
+          side: WidgetStateProperty.all(
+            BorderSide(color: borderColor, width: 1), // Border
+          ),
+          foregroundColor: WidgetStateProperty.all(textColor), // Warna teks
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                (states) {
+              if (states.contains(WidgetState.pressed)) {
+                return const Color(0xFF81C3D7); // Warna berubah saat ditekan
+              }
+              return Colors.transparent; // Warna default
+            },
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)), // Sudut lebih halus
+          ),
         ),
         child: Text(
           text,

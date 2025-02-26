@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/pages/kontrol_pakan_aerator.dart';
+import '../widget/app_bar_widget.dart';
 import 'history.dart';
 import 'notifikasi.dart';
 import '../widget/navigasi_monitoring.dart';
@@ -11,6 +12,12 @@ class Monitoring extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarWidget(
+        title: "Monitoring",
+        onBackPress: () {
+          Navigator.pop(context); // Kembali ke halaman sebelumnya
+        },
+      ),
       body: Stack(
         children: [
           const BackgroundWidget(), // Latar belakang

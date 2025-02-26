@@ -18,40 +18,43 @@ class NavigasiMonitoring extends StatefulWidget {
 class _NavigasiMonitoringState extends State<NavigasiMonitoring> {
   @override
   Widget build(BuildContext context) {
+    double iconSize = MediaQuery.of(context).size.width * 0.08; // Ukuran ikon responsif
+
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(5),
         topRight: Radius.circular(5),
       ),
       child: Container(
-        height: 60, // Tinggi navigasi
+        height: 60, // Tinggi navigasi tetap 60
         decoration: const BoxDecoration(
-          color: Colors.transparent, // Pastikan transparan
+          color: Colors.transparent,
         ),
         child: Row(
           children: [
-            // Tombol Monitoring
             _buildNavItem(
               index: 0,
               iconPath: "assets/icons/icon-monitoring.png",
+              iconSize: iconSize,
+              label: "Monitoring",
             ),
-
-            // Tombol History
             _buildNavItem(
               index: 1,
               iconPath: "assets/icons/icon-history.png",
+              iconSize: iconSize,
+              label: "Riwayat",
             ),
-
-            // Tombol Notification
             _buildNavItem(
               index: 2,
               iconPath: "assets/icons/icon-notification.png",
+              iconSize: iconSize,
+              label: "Notifikasi",
             ),
-
-            // Tombol Control
             _buildNavItem(
               index: 3,
               iconPath: "assets/icons/icon-control.png",
+              iconSize: iconSize,
+              label: "Kontrol",
             ),
           ],
         ),
@@ -59,26 +62,55 @@ class _NavigasiMonitoringState extends State<NavigasiMonitoring> {
     );
   }
 
-  Widget _buildNavItem({required int index, required String iconPath}) {
+  Widget _buildNavItem({
+    required int index,
+    required String iconPath,
+    required double iconSize,
+    required String label,
+  }) {
     bool isSelected = widget.selectedIndex == index;
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => widget.onTap(index), // Navigasi saat diklik
-        child: Container(
-          height: 60, // Tinggi navigasi
+        onTap: () => widget.onTap(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 60,
           decoration: BoxDecoration(
             color: isSelected
-                ? ColorConstant.primary
-                : const Color(0xFFD9DCD6).withAlpha(64), // 25% transparan
+                ? ColorConstant.primary.withAlpha(75)
+                : const Color(0xFFD9DCD6).withAlpha(64),
+            boxShadow: isSelected
+                ? [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              )
+            ]
+                : [],
           ),
-          child: Center(
-            child: Image.asset(
-              iconPath,
-              width: 30, // Ukuran ikon tetap 30x30
-              height: 30,
-              color: Colors.white, // Warna ikon tetap putih
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                iconPath,
+                width: iconSize,
+                height: iconSize,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 2),
+              FittedBox(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

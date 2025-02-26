@@ -1,71 +1,46 @@
 import 'package:flutter/material.dart';
+import '../widget/background_widget.dart';
 import '../widget/app_bar_widget.dart';
 import '../widget/button_widget.dart';
 import '../widget/standart_input.dart';
-import '../widget/background_widget.dart';
-import '../widget/standart_status_input.dart';
 
-class EditKolam extends StatefulWidget {
-  final String pondName;
-  final String status;
-
-  const EditKolam({
-    super.key,
-    required this.pondName,
-    required this.status,
-  });
-
-  @override
-  State<EditKolam> createState() => _EditKolamState();
-}
-
-class _EditKolamState extends State<EditKolam> {
-  late TextEditingController nameController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Mengisi input dengan data kolam yang dipilih
-    nameController = TextEditingController(text: widget.pondName);
-  }
-
-  @override
-  void dispose() {
-    // Membersihkan controller agar tidak terjadi memory leak
-    nameController.dispose();
-    super.dispose();
-  }
+class TambahKolam extends StatelessWidget {
+  const TambahKolam({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Untuk responsivitas
+
     return Scaffold(
       appBar: AppBarWidget(
-        title: "Edit ${widget.pondName}",
+        title: "Tambah Kolam",
         onBackPress: () {
           Navigator.pop(context);
         },
       ),
-      resizeToAvoidBottomInset: true, // **Agar layar naik saat keyboard muncul**
+      resizeToAvoidBottomInset: true, // Memastikan tampilan bisa naik saat keyboard muncul
       body: Stack(
         children: [
-          const BackgroundWidget(), // **Latar belakang**
+          const BackgroundWidget(), // Menggunakan background
 
           Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.08), // Padding responsif
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 40), // Jarak dari atas
+
+                // **Gunakan Expanded agar input dapat di-scroll jika perlu**
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // **Input Nama Kolam**
-                        StandartInputWidget(
-                          label: "Nama Kolam",
-                        ),
+                        // **Input ID Kolam**
+                        const StandartInputWidget(label: "ID Kolam"),
 
-                        // **Input Status Kolam Aktif/Non-Aktif**
-                        StatusInputWidget(),
+                        // **Input Nama Kolam**
+                        const StandartInputWidget(label: "Nama Kolam"),
 
                         const SizedBox(height: 20), // Jarak antara input dan tombol
                       ],
@@ -85,6 +60,7 @@ class _EditKolamState extends State<EditKolam> {
                     },
                   ),
                 ),
+                const SizedBox(height: 20), // Jarak bawah agar tidak menempel dengan layar
               ],
             ),
           ),

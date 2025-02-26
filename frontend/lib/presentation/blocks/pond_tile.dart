@@ -7,7 +7,8 @@ class PondTile extends StatefulWidget {
   final String pondName;
   final String status;
   final String date;
-  final VoidCallback onEdit;
+  final Map<String, String> pondData; // Tambahkan parameter untuk menyimpan seluruh data kolam
+  final Function(Map<String, String>) onEdit; // Ubah tipe agar bisa mengirim data kolam
   final VoidCallback onDelete;
 
   const PondTile({
@@ -15,8 +16,10 @@ class PondTile extends StatefulWidget {
     required this.pondName,
     required this.status,
     required this.date,
+    required this.pondData, // Tambahkan ini
     required this.onEdit,
     required this.onDelete,
+    required bool showMenu,
   });
 
   @override
@@ -28,7 +31,6 @@ class _PondTileState extends State<PondTile> {
   OverlayEntry? _overlayEntry;
 
   void _showMenu() {
-    // Dapatkan posisi ikon titik tiga
     final RenderBox renderBox = _menuKey.currentContext!.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
 
@@ -36,23 +38,21 @@ class _PondTileState extends State<PondTile> {
       builder: (context) {
         return Stack(
           children: [
-            // Area untuk menutup popup jika diklik di luar
             Positioned.fill(
               child: GestureDetector(
                 onTap: _removeMenu,
                 behavior: HitTestBehavior.translucent,
               ),
             ),
-            // Menampilkan menu di posisi yang benar
             Positioned(
-              left: offset.dx - 100, // Geser ke kiri jika perlu agar tidak keluar dari PondTile
-              top: offset.dy + renderBox.size.height + 5, // Posisi di bawah titik tiga
+              left: offset.dx - 100,
+              top: offset.dy + renderBox.size.height + 5,
               child: Material(
                 color: Colors.transparent,
                 child: PondMenuWidget(
                   onEdit: () {
                     _removeMenu();
-                    widget.onEdit();
+                    widget.onEdit(widget.pondData); // Mengirim data kolam
                   },
                   onDelete: () {
                     _removeMenu();
@@ -95,7 +95,6 @@ class _PondTileState extends State<PondTile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header (Nama Kolam & Icon Titik Tiga)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -111,7 +110,7 @@ class _PondTileState extends State<PondTile> {
                   ),
                 ),
                 GestureDetector(
-                  key: _menuKey, // Pasang key untuk mendapatkan posisi
+                  key: _menuKey,
                   onTap: _showMenu,
                   child: const Icon(Icons.more_vert, color: Colors.black54),
                 ),
@@ -119,7 +118,6 @@ class _PondTileState extends State<PondTile> {
             ),
             const SizedBox(height: 2),
 
-            // Status
             Text(
               widget.status,
               style: const TextStyle(
@@ -130,7 +128,6 @@ class _PondTileState extends State<PondTile> {
             ),
             const SizedBox(height: 1),
 
-            // Tanggal
             Text(
               widget.date,
               style: const TextStyle(
@@ -140,7 +137,6 @@ class _PondTileState extends State<PondTile> {
             ),
             const SizedBox(height: 2),
 
-            // Tombol Monitoring
             Center(
               child: OutlinedButtonWidget(
                 text: "Monitoring",

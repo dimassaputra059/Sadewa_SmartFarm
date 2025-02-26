@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../color/color_constant.dart';
 
-class ButtonAddPond extends StatelessWidget {
+class ButtonAdd extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isFullWidth;
 
-  const ButtonAddPond({
+  const ButtonAdd({
     super.key,
     required this.text,
     required this.onPressed,
@@ -24,9 +24,9 @@ class ButtonAddPond extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: ColorConstant.primary, // Warna tombol utama
           foregroundColor: Colors.white, // Warna teks
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6), // Padding sama dengan FilledButtonWidget
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding sama dengan FilledButtonWidget
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5), // Border radius sama
+            borderRadius: BorderRadius.circular(4), // Border radius sama
           ),
           elevation: 1, // Efek shadow
           minimumSize: const Size(0, 0),
@@ -44,7 +44,7 @@ class ButtonAddPond extends StatelessWidget {
           text,
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w600,
-            fontSize: 13, // Font size sama dengan FilledButtonWidget
+            fontSize: 14, // Font size sama dengan FilledButtonWidget
             color: Colors.white,
           ),
         ),

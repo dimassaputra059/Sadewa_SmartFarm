@@ -18,30 +18,31 @@ class NavigasiBeranda extends StatefulWidget {
 class _NavigasiBerandaState extends State<NavigasiBeranda> {
   @override
   Widget build(BuildContext context) {
+    double iconSize = MediaQuery.of(context).size.width * 0.08; // Ukuran ikon responsif
+
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(5),
         topRight: Radius.circular(5),
       ),
       child: Container(
-        height: 60, // Tinggi navigasi
+        height: 60, // Tinggi navigasi tetap 60
         decoration: const BoxDecoration(
-          color: Colors.transparent, // Pastikan transparan
+          color: Colors.transparent,
         ),
         child: Row(
           children: [
-            // Tombol Beranda (30x30)
             _buildNavItem(
               index: 0,
               iconPath: "assets/icons/icon-beranda.png",
-              iconSize: 30, // Ukuran ikon beranda
+              iconSize: iconSize,
+              label: "Beranda",
             ),
-
-            // Tombol Manajemen User (36x36)
             _buildNavItem(
               index: 1,
               iconPath: "assets/icons/icon-manajemen-user.png",
-              iconSize: 36, // Ukuran ikon manajemen user
+              iconSize: iconSize,
+              label: "Manajemen User",
             ),
           ],
         ),
@@ -49,26 +50,56 @@ class _NavigasiBerandaState extends State<NavigasiBeranda> {
     );
   }
 
-  Widget _buildNavItem({required int index, required String iconPath, required double iconSize}) {
+  Widget _buildNavItem({
+    required int index,
+    required String iconPath,
+    required double iconSize,
+    required String label,
+  }) {
     bool isSelected = widget.selectedIndex == index;
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => widget.onTap(index), // Navigasi saat diklik
-        child: Container(
-          height: 64, // Tinggi navigasi
+        onTap: () => widget.onTap(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 60,
           decoration: BoxDecoration(
             color: isSelected
-                ? ColorConstant.primary
-                : const Color(0xFFD9DCD6).withAlpha(64), // 25% transparan
+                ? ColorConstant.primary.withAlpha(75)
+                : const Color(0xFFD9DCD6).withAlpha(64),
+
+            boxShadow: isSelected
+                ? [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              )
+            ]
+                : [],
           ),
-          child: Center(
-            child: Image.asset(
-              iconPath,
-              width: iconSize, // Ukuran ikon sesuai dengan parameter
-              height: iconSize,
-              color: Colors.white, // Warna ikon tetap putih
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                iconPath,
+                width: iconSize,
+                height: iconSize,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 2),
+              FittedBox(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

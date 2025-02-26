@@ -14,7 +14,7 @@ class EditProfile extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBarWidget(
-        title: "Edit Profil",
+        title: "Edit Profile",
         onBackPress: () {
           Navigator.pop(context);
         },
@@ -26,33 +26,40 @@ class EditProfile extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: size.width * 0.08), // Padding responsif
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40), // Jarak dari atas
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20), // Jarak dari atas
 
-                // **Input Username**
-                const StandartInputWidget(label: "Username"),
+                        // **Input Username**
+                        const StandartInputWidget(label: "Username"),
 
-                // **Input Email**
-                const StandartInputWidget(label: "Email"),
-
-                const Spacer(), // Mengisi ruang kosong agar tombol tetap di bawah
-
-                // **Tombol Simpan**
-                SizedBox(
-                  width: double.infinity, // Lebar mengikuti halaman
-                  child: FilledButtonWidget(
-                    text: "Simpan",
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Profile()),
-                      );
-                    },
+                        // **Input Email**
+                        const StandartInputWidget(label: "Email"),
+                      ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 40), // Jarak dari bawah
+                // **Tombol Simpan di bawah**
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20), // Memberi jarak dari bawah
+                  child: SizedBox(
+                    width: double.infinity, // Lebar mengikuti halaman
+                    child: FilledButtonWidget(
+                      text: "Simpan",
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Profile()),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

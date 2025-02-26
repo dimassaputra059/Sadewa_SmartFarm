@@ -29,7 +29,7 @@ class _PlaceholderInputWidgetState extends State<PlaceholderInputWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: size.height * 0.05 < 40 ? 40 : size.height * 0.05, // Minimal 40px
+          height: size.height * 0.06 < 50 ? 50 : size.height * 0.06,
           child: TextField(
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w400, // Tidak italic
@@ -70,7 +70,7 @@ class _PlaceholderInputWidgetState extends State<PlaceholderInputWidget> {
               fillColor: Colors.transparent, // Background transparan
               filled: true,
               contentPadding: EdgeInsets.symmetric(
-                  vertical: size.height * 0.012, horizontal: size.width * 0.03), // Padding responsif
+                  vertical: size.height * 0.02, horizontal: size.width * 0.03), // Padding responsif
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(size.width * 0.025), // Border melengkung responsif
                 borderSide: const BorderSide(color: Colors.white),

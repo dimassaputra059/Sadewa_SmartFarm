@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/widget/profile_menu_widget.dart'; // Import widget baru
 
-class ProfileButtonWidget extends StatelessWidget {
+class ProfileButtonWidget extends StatefulWidget {
   final String username;
   final String role;
 
@@ -10,6 +10,13 @@ class ProfileButtonWidget extends StatelessWidget {
     required this.username,
     required this.role,
   });
+
+  @override
+  _ProfileButtonWidgetState createState() => _ProfileButtonWidgetState();
+}
+
+class _ProfileButtonWidgetState extends State<ProfileButtonWidget> {
+  bool isPressed = false; // State untuk mendeteksi apakah tombol ditekan
 
   void _showProfileMenu(BuildContext context, RenderBox buttonBox) {
     final buttonPosition = buttonBox.localToGlobal(Offset.zero);
@@ -30,15 +37,30 @@ class ProfileButtonWidget extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTap: () {
+      onTapDown: (_) {
+        setState(() {
+          isPressed = true; // Ubah warna background menjadi 0xFF316B94 saat ditekan
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          isPressed = false; // Kembalikan ke transparan setelah dilepas
+        });
+
         RenderBox box = context.findRenderObject() as RenderBox;
         _showProfileMenu(context, box);
       },
-      child: Container(
+      onTapCancel: () {
+        setState(() {
+          isPressed = false; // Jika interaksi batal, kembalikan ke transparan
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200), // Animasi smooth
         width: size.width * 0.45,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF316B94),
+          color: isPressed ? const Color(0xFF316B94) : Colors.transparent, // Warna berubah saat ditekan
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white, width: 1),
         ),
@@ -61,7 +83,7 @@ class ProfileButtonWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    username,
+                    widget.username,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -70,7 +92,7 @@ class ProfileButtonWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    role,
+                    widget.role,
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w400,

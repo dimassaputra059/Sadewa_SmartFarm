@@ -3,49 +3,43 @@ import '../widget/app_bar_widget.dart';
 import '../widget/button_widget.dart';
 import '../widget/standart_input.dart';
 import '../widget/background_widget.dart';
-import '../widget/standart_status_input.dart';
+import '../widget/standart_role_input.dart';
 
-class EditKolam extends StatefulWidget {
-  final String pondName;
-  final String status;
+class EditUser extends StatefulWidget {
+  final String username;
+  final String email;
+  final String role;
 
-  const EditKolam({
+  const EditUser({
     super.key,
-    required this.pondName,
-    required this.status,
+    required this.username,
+    required this.email,
+    required this.role,
   });
 
   @override
-  State<EditKolam> createState() => _EditKolamState();
+  State<EditUser> createState() => _EditUserState();
 }
 
-class _EditKolamState extends State<EditKolam> {
-  late TextEditingController nameController;
+class _EditUserState extends State<EditUser> {
+  String? selectedRole;
 
   @override
   void initState() {
     super.initState();
-    // Mengisi input dengan data kolam yang dipilih
-    nameController = TextEditingController(text: widget.pondName);
-  }
-
-  @override
-  void dispose() {
-    // Membersihkan controller agar tidak terjadi memory leak
-    nameController.dispose();
-    super.dispose();
+    selectedRole = widget.role; // Menetapkan role awal
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        title: "Edit ${widget.pondName}",
+        title: "Edit ${widget.username}",
         onBackPress: () {
           Navigator.pop(context);
         },
       ),
-      resizeToAvoidBottomInset: true, // **Agar layar naik saat keyboard muncul**
+      resizeToAvoidBottomInset: true, // Agar layar menyesuaikan saat keyboard muncul
       body: Stack(
         children: [
           const BackgroundWidget(), // **Latar belakang**
@@ -53,26 +47,27 @@ class _EditKolamState extends State<EditKolam> {
           Padding(
             padding: const EdgeInsets.all(30.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // **Expanded dengan SingleChildScrollView agar bisa scroll**
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // **Input Nama Kolam**
-                        StandartInputWidget(
-                          label: "Nama Kolam",
-                        ),
+                        // **Input Username**
+                        StandartInputWidget(label: "Username"),
 
-                        // **Input Status Kolam Aktif/Non-Aktif**
-                        StatusInputWidget(),
+                        // **Input Email**
+                        StandartInputWidget(label: "Email"),
 
-                        const SizedBox(height: 20), // Jarak antara input dan tombol
+                        // **Input Role**
+                        RoleInputWidget(),
                       ],
                     ),
                   ),
                 ),
 
+                // **Tombol Simpan Tetap di Bawah**
                 // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity, // Agar tombol selebar layar

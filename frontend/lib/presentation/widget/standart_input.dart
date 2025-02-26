@@ -19,7 +19,7 @@ class StandartInputWidget extends StatelessWidget {
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: size.width * 0.045, // Sekitar 4.5% dari lebar layar
+            fontSize: size.width * 0.04, // Sekitar 4.5% dari lebar layar
             fontWeight: FontWeight.w600, // SemiBold
             color: Colors.white, // Warna teks label
           ),
@@ -28,10 +28,9 @@ class StandartInputWidget extends StatelessWidget {
 
         // **Input field dengan tinggi responsif (minimal 40)**
         SizedBox(
-          height: size.height * 0.05 < 40 ? 40 : size.height * 0.05, // Minimal 40px
+          height: size.height * 0.05 < 40 ? 40 : size.height * 0.05,
           child: TextField(
             style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600,
               fontSize: size.width * 0.04, // Sekitar 4% dari lebar layar
               color: Colors.white, // Warna teks dalam input
             ),

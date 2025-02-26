@@ -52,6 +52,7 @@ class _OTPInputWidgetState extends State<OTPInputWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(4, (index) {
         return SizedBox(
+
           width: 40, // Lebar kotak input
           height: 40, // Tinggi kotak input
           child: TextField(
