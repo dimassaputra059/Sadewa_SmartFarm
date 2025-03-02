@@ -23,41 +23,44 @@ class DataWidget extends StatelessWidget {
         double textSize = constraints.maxWidth < 350 ? 12 : 14;
         double iconSize = constraints.maxWidth < 350 ? 20.0 : 22.0;
 
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                'Data Tambak $date',
-                style: GoogleFonts.inter(
-                  fontSize: textSize,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF16425B),
+        return SizedBox(
+          height: 45,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Data Tambak $date',
+                  style: GoogleFonts.inter(
+                    fontSize: textSize,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF16425B),
+                  ),
+                  overflow: TextOverflow.ellipsis, // Agar teks tidak kepanjangan di layar kecil
                 ),
-                overflow: TextOverflow.ellipsis, // Agar teks tidak kepanjangan di layar kecil
               ),
-            ),
-            Row(
-              children: [
-                ButtonDetailWidget(
-                  text: 'Lihat Detail',
-                  onPressed: () {
-                    // **Navigasi ke halaman LaporanKualitasAir**
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LaporanKualitasAir(date: date),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: onDownloadPressed,
-                  icon: Icon(LucideIcons.download, color: const Color(0xFF16425B), size: iconSize),
-                ),
-              ],
-            ),
-          ],
+              Row(
+                children: [
+                  ButtonDetailWidget(
+                    text: 'Lihat Detail',
+                    onPressed: () {
+                      // **Navigasi ke halaman LaporanKualitasAir**
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LaporanKualitasAir(date: date),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    onPressed: onDownloadPressed,
+                    icon: Icon(LucideIcons.download, color: const Color(0xFF16425B), size: iconSize),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );

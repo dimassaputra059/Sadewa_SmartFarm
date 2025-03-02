@@ -50,7 +50,7 @@ class EditParameterWidget extends StatelessWidget {
 
     return Container(
       width: screenWidth * 0.9,
-      height: screenHeight * 0.58,
+      height: screenHeight * 0.6,
       padding: EdgeInsets.only(
         left: screenWidth * 0.05,  // 5% dari lebar layar
         right: screenWidth * 0.05, // 5% dari lebar layar
@@ -98,23 +98,22 @@ class EditParameterWidget extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.03),
           _buildSettingBox("Tertinggi", initialHighValue, screenWidth, screenHeight),
+          SizedBox(height: screenHeight * 0.01),
           _buildSettingBox("Terendah", initialLowValue, screenWidth, screenHeight),
 
 
           // Tombol Simpan
-          Padding(
-            padding: EdgeInsets.only(right: screenWidth * 0.05),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: OutlinedButtonWidget(
-                text: "Simpan",
-                onPressed: () {
-                  // Implementasi penyimpanan parameter
-                },
-                isFullWidth: false,
-                borderColor: ColorConstant.primary,
-                textColor: ColorConstant.primary,
-              ),
+          SizedBox(height: screenHeight * 0.01),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButtonWidget(
+              text: "Simpan",
+              onPressed: () {
+                // Implementasi penyimpanan parameter
+              },
+              isFullWidth: true,
+              borderColor: ColorConstant.primary,
+              textColor: ColorConstant.primary,
             ),
           ),
 
@@ -156,7 +155,7 @@ class EditParameterWidget extends StatelessWidget {
         Text(
           "$value $unit",
           style: TextStyle(
-            fontSize: screenWidth * 0.055,
+            fontSize: screenWidth * 0.065,
             fontWeight: FontWeight.bold,
             color: ColorConstant.primary,
           ),

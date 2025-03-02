@@ -13,7 +13,7 @@ class RiwayatLaporan extends StatefulWidget {
 
 class _RiwayatLaporanState extends State<RiwayatLaporan> {
   int currentPage = 1;
-  final int itemsPerPage = 6; // Jumlah item per halaman
+  final int itemsPerPage = 7; // Jumlah item per halaman
   final List<String> allDates = List.generate(20, (index) =>
   "${(6 + index).toString().padLeft(2, '0')}/02/2025"); // Simulasi data
 
@@ -53,7 +53,7 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
         double paddingSize = screenWidth < 350 ? 12.0 : 15.0;
 
         return Container(
-          padding: EdgeInsets.only(top: paddingSize * 2, left: paddingSize, right: paddingSize),
+          padding: EdgeInsets.only(top: paddingSize * 1.5, left: paddingSize, right: paddingSize),
           decoration: BoxDecoration(
             color: const Color(0x80D9DCD6),
             borderRadius: BorderRadius.circular(10),
@@ -65,14 +65,14 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
               Row(
                 children: [
                   Text(
-                    "Cari Data Tambak :",
+                    "Cari Data Tambak :  ",
                     style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.w500,
                       color: ColorConstant.primary,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 1),
                   Expanded(child: SearchDateWidget(onDateSelected: _filterData)),
                 ],
               ),
@@ -94,7 +94,7 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
                 children: [
                   // **List Data dengan Divider**
                   SizedBox(
-                    height: itemsPerPage * 63, // Responsif tinggi daftar data
+                    height: itemsPerPage * 60, // Responsif tinggi daftar data
                     child: ListView.builder(
                       physics: const NeverScrollableScrollPhysics(), // Hindari scrolling dalam scrolling
                       itemCount: displayedData.length,
@@ -114,7 +114,7 @@ class _RiwayatLaporanState extends State<RiwayatLaporan> {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
                   // **Navigasi Halaman (Pagination)**
                   Row(

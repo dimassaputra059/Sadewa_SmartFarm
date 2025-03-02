@@ -26,16 +26,21 @@ class History extends StatelessWidget {
         children: [
           const BackgroundWidget(),
 
-          // **Konten Utama Riwayat Laporan**
-          Positioned(
-            top: screenHeight * 0.04,
-            left: screenWidth * 0.06,
-            right: screenWidth * 0.06,
-            bottom: screenHeight * 0.10, // Menyesuaikan batas bawah
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20.0), // Agar tidak bertabrakan dengan navigasi
-                child: const RiwayatLaporan(),
+          // **Konten Utama Riwayat Laporan tanpa scroll**
+          Positioned.fill(
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: screenHeight * 0.0225,
+                left: screenWidth * 0.04,
+                right: screenWidth * 0.04,
+                bottom: screenHeight * 0.10, // Menyesuaikan batas bawah
+              ),
+              child: Column(
+                children: [
+                  const Expanded(
+                    child: RiwayatLaporan(), // Pastikan tidak ada scrolling di dalamnya
+                  ),
+                ],
               ),
             ),
           ),

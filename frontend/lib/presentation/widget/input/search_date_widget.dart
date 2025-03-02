@@ -25,7 +25,7 @@ class _SearchDateWidgetState extends State<SearchDateWidget> {
         double padding = width < 300 ? 6.0 : 8.0;
 
         return SizedBox(
-          height: 36, // Menetapkan tinggi input
+          height: 30, // Menetapkan tinggi input
           child: TextField(
             controller: _dateController,
             readOnly: true, // Agar user tidak bisa mengetik manual
