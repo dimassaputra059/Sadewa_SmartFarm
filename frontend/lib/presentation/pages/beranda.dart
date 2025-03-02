@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/blocks/pond_tile.dart';
-import 'package:frontend_app/presentation/pages/tambah_kolam.dart';
-import '../blocks/main_header_widget.dart';
-import '../widget/button_add.dart';
-import '../widget/navigasi_beranda.dart';
+import 'package:frontend_app/presentation/pages/manajemen/kolam/tambah_kolam.dart';
+import '../blocks/main_header.dart';
+import '../widget/button/button_add.dart';
+import '../widget/navigation/navigasi_beranda.dart';
 import '../widget/background_widget.dart';
-import 'edit_kolam.dart';
+import 'manajemen/kolam/edit_kolam.dart';
 import 'manajemen_user.dart';
 
 class Beranda extends StatefulWidget {
@@ -17,6 +17,14 @@ class Beranda extends StatefulWidget {
 
 class _BerandaState extends State<Beranda> {
   List<Map<String, String>> pondList = [
+    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
+    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
+    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
+    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
+    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
+    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
+    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
+    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
     {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
     {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
     {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
@@ -55,7 +63,7 @@ class _BerandaState extends State<Beranda> {
             left: 0,
             right: 0,
             top: screenHeight * 0.05,
-            child: const MainHeaderWidget(),
+            child: const MainHeader(),
           ),
 
           // **Konten Utama**
@@ -117,8 +125,8 @@ class _BerandaState extends State<Beranda> {
                               status: pond["status"]!,
                               date: pond["date"]!,
                               showMenu: true,
-                              pondData: pond, // Kirim seluruh data kolam
-                              onEdit: (selectedPond) => _onEditPond(context, selectedPond), // Ubah menjadi fungsi dengan parameter
+                              pondData: pond,
+                              onEdit: (selectedPond) => _onEditPond(context, selectedPond),
                               onDelete: () => _onDeletePond(pond["name"]!),
                             );
                           }

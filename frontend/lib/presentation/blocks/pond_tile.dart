@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_app/presentation/pages/monitoring.dart';
-import 'package:frontend_app/presentation/widget/button_monitoring.dart';
+import 'package:frontend_app/presentation/pages/monitoring/monitoring.dart';
+import 'package:frontend_app/presentation/widget/button/button_monitoring.dart';
 import 'package:frontend_app/presentation/widget/pond_menu_widget.dart';
 
 class PondTile extends StatefulWidget {
   final String pondName;
   final String status;
   final String date;
-  final Map<String, String> pondData; // Tambahkan parameter untuk menyimpan seluruh data kolam
-  final Function(Map<String, String>) onEdit; // Ubah tipe agar bisa mengirim data kolam
+  final Map<String, String> pondData;
+  final Function(Map<String, String>) onEdit;
   final VoidCallback onDelete;
 
   const PondTile({
@@ -16,7 +16,7 @@ class PondTile extends StatefulWidget {
     required this.pondName,
     required this.status,
     required this.date,
-    required this.pondData, // Tambahkan ini
+    required this.pondData,
     required this.onEdit,
     required this.onDelete,
     required bool showMenu,
@@ -52,7 +52,7 @@ class _PondTileState extends State<PondTile> {
                 child: PondMenuWidget(
                   onEdit: () {
                     _removeMenu();
-                    widget.onEdit(widget.pondData); // Mengirim data kolam
+                    widget.onEdit(widget.pondData);
                   },
                   onDelete: () {
                     _removeMenu();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_app/presentation/pages/profile.dart';
-import 'package:frontend_app/presentation/pages/edit_profile.dart';
-import 'package:frontend_app/presentation/pages/login.dart';
+import 'package:frontend_app/presentation/pages/manajemen/profile/profile.dart';
+import 'package:frontend_app/presentation/pages/manajemen/profile/edit_profile.dart';
+import 'package:frontend_app/presentation/pages/autentikasi/login.dart';
 
 class ProfileMenuWidget extends StatelessWidget {
   final double leftPosition;

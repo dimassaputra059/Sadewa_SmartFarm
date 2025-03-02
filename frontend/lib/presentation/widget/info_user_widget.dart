@@ -21,14 +21,14 @@ class InfoUserWidget extends StatelessWidget {
           label,
           style: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w600, // SemiBold
+            fontWeight: FontWeight.w600,
             color: Colors.white
           ),
         ),
 
         // Info
         Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 6, left: 20), // Jarak antar teks
+          padding: const EdgeInsets.only(top: 4, bottom: 6, left: 20),
           child: Text(
             info,
             style: GoogleFonts.poppins(
@@ -43,7 +43,7 @@ class InfoUserWidget extends StatelessWidget {
         Container(
           width: 250,
           height: 1.5,
-          color: Colors.white.withAlpha(128), // Warna garis dengan transparansi
+          color: Colors.white.withAlpha(128),
         ),
       ],
     );

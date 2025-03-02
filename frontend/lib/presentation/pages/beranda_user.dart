@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/blocks/pond_tile.dart';
-import 'package:frontend_app/presentation/pages/tambah_kolam.dart';
-import '../blocks/main_header_widget.dart';
-import '../widget/button_add.dart';
-import '../widget/navigasi_beranda.dart';
+import 'package:frontend_app/presentation/pages/manajemen/kolam/tambah_kolam.dart';
+import '../blocks/main_header.dart';
+import '../widget/button/button_add.dart';
 import '../widget/background_widget.dart';
-import '../widget/navigasi_beranda_user.dart';
-import 'edit_kolam.dart';
-import 'manajemen_user.dart';
+import 'manajemen/kolam/edit_kolam.dart';
 
 class BerandaUser extends StatefulWidget {
   const BerandaUser({super.key});
@@ -55,7 +52,7 @@ class _BerandaUserState extends State<BerandaUser> {
             left: 0,
             right: 0,
             top: screenHeight * 0.05,
-            child: const MainHeaderWidget(),
+            child: const MainHeader(),
           ),
 
           // **Konten Utama**
@@ -79,17 +76,6 @@ class _BerandaUserState extends State<BerandaUser> {
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ButtonAdd(
-                        text: "Tambah Kolam",
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const TambahKolam()),
-                          );
-                        },
                       ),
                     ),
                   ],
