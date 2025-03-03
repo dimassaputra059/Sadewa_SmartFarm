@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../color/color_constant.dart';
-import '../widget/button/button_monitoring.dart';
-import '../widget/button/toggle_switch.dart';
-import '../widget/input/input_schedule.dart';
+import '../widget/button/button_outlined.dart';
+import '../widget/button/button_switch.dart';
+import '../widget/input/input_schedule_time.dart';
 import '../widget/input/input_value.dart';
 
 class KontrolPakan extends StatelessWidget {
@@ -65,10 +65,10 @@ class KontrolPakan extends StatelessWidget {
                   ),
                   child: Column(
                     children: const [
-                      ScheduleTimePicker(label: 'Waktu 1'),
-                      ScheduleTimePicker(label: 'Waktu 2'),
-                      ScheduleTimePicker(label: 'Waktu 3'),
-                      ScheduleTimePicker(label: 'Waktu 4'),
+                      InputScheduleTime(label: 'Waktu 1'),
+                      InputScheduleTime(label: 'Waktu 2'),
+                      InputScheduleTime(label: 'Waktu 3'),
+                      InputScheduleTime(label: 'Waktu 4'),
                     ],
                   ),
                 ),
@@ -100,7 +100,7 @@ class KontrolPakan extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const ToggleSwitchWidget(),
+                          const ButtonSwitch(),
                         ],
                       ),
                     ),
@@ -127,7 +127,7 @@ class KontrolPakan extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          InputValueWidget(
+                          InputValue(
                             initialValue: 100,
                             minValue: 100,
                             maxValue: 500,
@@ -142,7 +142,7 @@ class KontrolPakan extends StatelessWidget {
 
                     // Tombol Simpan
                     Center(
-                      child: OutlinedButtonWidget(
+                      child: ButtonOutlined(
                         text: "Simpan",
                         onPressed: () {},
                       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:async';
-import '../widget/profile_widget.dart';
+import 'tile_profile.dart';
 
 class MainHeader extends StatefulWidget {
   const MainHeader({super.key});
@@ -75,7 +75,7 @@ class _MainHeaderState extends State<MainHeader> {
                   ),
                 ],
               ),
-              ProfileButtonWidget(
+              TileProfile(
                 username: "OwnerTambak",
                 role: "Admin",
               ),

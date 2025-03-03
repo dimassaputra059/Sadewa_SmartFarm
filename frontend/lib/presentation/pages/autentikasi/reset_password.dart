@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import '../../widget/background_widget.dart';
-import '../../widget/button/button_widget.dart';
-import '../../widget/input/placeholder_input.dart';
+import '../../widget/button/button_filled.dart';
+import '../../widget/input/input_placeholder.dart';
 import 'login.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -52,7 +52,7 @@ class ResetPassword extends StatelessWidget {
                   Gap(gapSize * 1.5),
 
                   // **Input Password Baru**
-                  const PlaceholderInputWidget(
+                  const InputPlaceholder(
                     label: "Password",
                     iconPath: "assets/icons/icon-password.png",
                     isPassword: true,
@@ -60,7 +60,7 @@ class ResetPassword extends StatelessWidget {
                   Gap(gapSize),
 
                   // **Input Konfirmasi Password**
-                  const PlaceholderInputWidget(
+                  const InputPlaceholder(
                     label: "Confirm Password",
                     iconPath: "assets/icons/icon-password.png",
                     isPassword: true,
@@ -70,7 +70,7 @@ class ResetPassword extends StatelessWidget {
                   // **Tombol Simpan**
                   SizedBox(
                     width: size.width * 0.5,
-                    child: FilledButtonWidget(
+                    child: ButtonFilled(
                       text: 'Simpan',
                       onPressed: () {
                         Navigator.of(context).pushReplacement(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../color/color_constant.dart';
-import '../widget/button/button_monitoring.dart';
-import '../widget/button/toggle_switch.dart';
+import '../widget/button/button_outlined.dart';
+import '../widget/button/button_switch.dart';
 import '../widget/input/input_value.dart';
 
 class KontrolAerator extends StatelessWidget {
@@ -53,7 +53,7 @@ class KontrolAerator extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8), // Beri sedikit jarak antara teks dan switch
-                const ToggleSwitchWidget(),
+                const ButtonSwitch(),
               ],
             ),
           ),
@@ -88,7 +88,7 @@ class KontrolAerator extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      InputValueWidget(
+                      InputValue(
                         initialValue: 15,
                         minValue: 5,
                         maxValue: 60,
@@ -100,7 +100,7 @@ class KontrolAerator extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              OutlinedButtonWidget(
+              ButtonOutlined(
                 text: "Simpan",
                 onPressed: () {},
               ),

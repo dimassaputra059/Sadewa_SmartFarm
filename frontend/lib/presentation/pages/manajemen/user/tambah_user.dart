@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../widget/background_widget.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
-import '../../../widget/button/button_widget.dart';
-import '../../../widget/input/placeholder_input.dart';
-import '../../../widget/input/placeholder_role_input.dart';
+import '../../../widget/button/button_filled.dart';
+import '../../../widget/input/input_placeholder.dart';
+import '../../../widget/input/input_role_placeholder.dart';
 
 class TambahUser extends StatefulWidget {
   const TambahUser({super.key});
@@ -43,17 +43,17 @@ class _TambahUserState extends State<TambahUser> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // **Input Username**
-                        const PlaceholderInputWidget(
+                        const InputPlaceholder(
                           label: "Username",
                           iconPath: "assets/icons/icon-username.png",
                         ),
                         // **Input Email**
-                        const PlaceholderInputWidget(
+                        const InputPlaceholder(
                           label: "Email",
                           iconPath: "assets/icons/icon-email.png",
                         ),
                         // **Dropdown Role**
-                        PlaceholderRoleInput(
+                        InputRolePlaceholder(
                           onRoleSelected: (role) {
                             setState(() {
                               selectedRole = role;
@@ -62,14 +62,14 @@ class _TambahUserState extends State<TambahUser> {
                         ),
 
                         // **Input Password**
-                        const PlaceholderInputWidget(
+                        const InputPlaceholder(
                           label: "Password",
                           isPassword: true,
                           iconPath: "assets/icons/icon-password.png",
                         ),
 
                         // **Input Confirm Password**
-                        const PlaceholderInputWidget(
+                        const InputPlaceholder(
                           label: "Confirm Password",
                           isPassword: true,
                           iconPath: "assets/icons/icon-password.png",
@@ -83,7 +83,7 @@ class _TambahUserState extends State<TambahUser> {
                 // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButtonWidget(
+                  child: ButtonFilled(
                     text: "Simpan",
                     isFullWidth: true,
                     onPressed: () {

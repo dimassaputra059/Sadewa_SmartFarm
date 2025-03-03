@@ -5,10 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gap/gap.dart';
 
 import '../../widget/background_widget.dart';
-import '../../widget/input/placeholder_input.dart';
-import '../../widget/input/otp_input_widget.dart';
-import '../../widget/button/button_widget.dart';
-import '../../widget/button/text_button_widget.dart';
+import '../../widget/input/input_placeholder.dart';
+import '../../widget/input/input_otp.dart';
+import '../../widget/button/button_filled.dart';
+import '../../widget/button/button_text.dart';
 
 class LupaPassword extends StatelessWidget {
   const LupaPassword({super.key});
@@ -56,7 +56,7 @@ class LupaPassword extends StatelessWidget {
                   // **Input Email**
                   SizedBox(
                     width: size.width * 0.8,
-                    child: const PlaceholderInputWidget(
+                    child: const InputPlaceholder(
                       label: "Email",
                       iconPath: "assets/icons/icon-email.png",
                     ),
@@ -65,7 +65,7 @@ class LupaPassword extends StatelessWidget {
 
                   // **Tombol "Minta Kode OTP"**
                   SizedBox(
-                    child: FilledButtonWidget(
+                    child: ButtonFilled(
                       text: "Minta Kode OTP",
                       onPressed: () {
                         // TODO: Implementasi permintaan OTP
@@ -89,13 +89,13 @@ class LupaPassword extends StatelessWidget {
                   // **Input OTP**
                   SizedBox(
                     width: size.width * 0.7,
-                    child: const OTPInputWidget(),
+                    child: const InputOTP(),
                   ),
                   const Gap(20),
 
                   // **Tombol "Kirim Kode OTP"**
                   SizedBox(
-                    child: FilledButtonWidget(
+                    child: ButtonFilled(
                       text: "Kirim Kode OTP",
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -106,7 +106,7 @@ class LupaPassword extends StatelessWidget {
                   ),
                   const Gap(15),
                   // **Tombol "Kembali Login"**
-                  TextButtonWidget(
+                  ButtonText(
                     text: 'Kembali Login ?',
                     fontSize: size.width * 0.045,
                     onPressed: () {

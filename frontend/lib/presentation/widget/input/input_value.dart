@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../color/color_constant.dart';
 
-class InputValueWidget extends StatefulWidget {
+class InputValue extends StatefulWidget {
   final double initialValue;
   final double minValue;
   final double maxValue;
@@ -9,7 +9,7 @@ class InputValueWidget extends StatefulWidget {
   final String unit; // Satuan nilai (pH, ppt, NTU, gram, menit)
   final ValueChanged<double>? onChanged; // Callback untuk menangkap perubahan nilai
 
-  const InputValueWidget({
+  const InputValue({
     super.key,
     required this.initialValue,
     required this.minValue,
@@ -20,10 +20,10 @@ class InputValueWidget extends StatefulWidget {
   });
 
   @override
-  _InputValueWidgetState createState() => _InputValueWidgetState();
+  _InputValueState createState() => _InputValueState();
 }
 
-class _InputValueWidgetState extends State<InputValueWidget> {
+class _InputValueState extends State<InputValue> {
   late double _value;
 
   @override

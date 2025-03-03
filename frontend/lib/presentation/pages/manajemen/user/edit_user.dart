@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
-import '../../../widget/button/button_widget.dart';
-import '../../../widget/input/standart_input.dart';
+import '../../../widget/button/button_filled.dart';
+import '../../../widget/input/input_standart.dart';
 import '../../../widget/background_widget.dart';
-import '../../../widget/input/standart_role_input.dart';
+import '../../../widget/input/input_role_standart.dart';
 
 class EditUser extends StatefulWidget {
   final String username;
@@ -54,11 +54,11 @@ class _EditUserState extends State<EditUser> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // **Input Username**
-                        StandartInputWidget(label: "Username"),
+                        InputStandart(label: "Username"),
                         // **Input Email**
-                        StandartInputWidget(label: "Email"),
+                        InputStandart(label: "Email"),
                         // **Input Role**
-                        RoleInputWidget(),
+                        InputRoleStandart(),
                       ],
                     ),
                   ),
@@ -67,7 +67,7 @@ class _EditUserState extends State<EditUser> {
                 // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButtonWidget(
+                  child: ButtonFilled(
                     text: "Simpan",
                     isFullWidth: true,
                     onPressed: () {

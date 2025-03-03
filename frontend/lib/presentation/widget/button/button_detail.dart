@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ButtonDetailWidget extends StatelessWidget {
+class ButtonDetail extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isFullWidth;
   final Color borderColor;
   final Color textColor;
 
-  const ButtonDetailWidget({
+  const ButtonDetail({
     super.key,
     required this.text,
     required this.onPressed,

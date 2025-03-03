@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../widget/background_widget.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
-import '../../../widget/button/button_widget.dart';
-import '../../../widget/input/standart_input.dart';
+import '../../../widget/button/button_filled.dart';
+import '../../../widget/input/input_standart.dart';
 
 class TambahKolam extends StatelessWidget {
   const TambahKolam({super.key});
@@ -35,9 +35,9 @@ class TambahKolam extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // **Input ID Kolam**
-                        const StandartInputWidget(label: "ID Kolam"),
+                        const InputStandart(label: "ID Kolam"),
                         // **Input Nama Kolam**
-                        const StandartInputWidget(label: "Nama Kolam"),
+                        const InputStandart(label: "Nama Kolam"),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -47,7 +47,7 @@ class TambahKolam extends StatelessWidget {
                 // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButtonWidget(
+                  child: ButtonFilled(
                     text: "Simpan",
                     isFullWidth: true,
                     onPressed: () {

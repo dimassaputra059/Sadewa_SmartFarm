@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/pages/manajemen/profile/profile.dart';
 import '../../../widget/background_widget.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
-import '../../../widget/button/button_widget.dart';
-import '../../../widget/input/standart_input.dart';
+import '../../../widget/button/button_filled.dart';
+import '../../../widget/input/input_standart.dart';
 
 class EditProfile extends StatelessWidget {
   const EditProfile({super.key});
@@ -35,9 +35,9 @@ class EditProfile extends StatelessWidget {
                         const SizedBox(height: 20),
 
                         // **Input Username**
-                        const StandartInputWidget(label: "Username"),
+                        const InputStandart(label: "Username"),
                         // **Input Email**
-                        const StandartInputWidget(label: "Email"),
+                        const InputStandart(label: "Email"),
                       ],
                     ),
                   ),
@@ -48,7 +48,7 @@ class EditProfile extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: SizedBox(
                     width: double.infinity,
-                    child: FilledButtonWidget(
+                    child: ButtonFilled(
                       text: "Simpan",
                       onPressed: () {
                         Navigator.pushReplacement(

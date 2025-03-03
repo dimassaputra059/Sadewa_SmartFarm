@@ -4,12 +4,12 @@ import '../../blocks/kontrol_pakan.dart';
 import '../../widget/navigation/app_bar_widget.dart';
 import '../../widget/navigation/navigasi_monitoring.dart';
 import '../../widget/background_widget.dart';
-import 'history.dart';
-import 'monitoring.dart';
+import 'riwayat_kualitas_air/riwayat_kualitas_air.dart';
+import 'monitoirng_sensor/monitoring.dart';
 import 'notifikasi.dart';
 
-class Control extends StatelessWidget {
-  const Control({super.key});
+class KontrolPakanAerator extends StatelessWidget {
+  const KontrolPakanAerator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +59,13 @@ class Control extends StatelessWidget {
                 else if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const History()),
+                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
                   );
                 }
                 else if (index == 2){
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Notif()),
+                    MaterialPageRoute(builder: (context) => const Notifikasi()),
                   );
                 }
               },

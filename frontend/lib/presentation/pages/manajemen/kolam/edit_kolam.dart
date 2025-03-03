@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
-import '../../../widget/button/button_widget.dart';
-import '../../../widget/input/standart_input.dart';
+import '../../../widget/button/button_filled.dart';
+import '../../../widget/input/input_standart.dart';
 import '../../../widget/background_widget.dart';
-import '../../../widget/input/standart_status_input.dart';
+import '../../../widget/input/input_status.dart';
 
 class EditKolam extends StatefulWidget {
   final String pondName;
@@ -58,11 +58,11 @@ class _EditKolamState extends State<EditKolam> {
                     child: Column(
                       children: [
                         // **Input Nama Kolam**
-                        StandartInputWidget(
+                        InputStandart(
                           label: "Nama Kolam",
                         ),
                         // **Input Status Kolam Aktif/Non-Aktif**
-                        StatusInputWidget(),
+                        InputStatus(),
 
                         const SizedBox(height: 20),
                       ],
@@ -73,7 +73,7 @@ class _EditKolamState extends State<EditKolam> {
                 // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButtonWidget(
+                  child: ButtonFilled(
                     text: "Simpan",
                     isFullWidth: true,
                     onPressed: () {

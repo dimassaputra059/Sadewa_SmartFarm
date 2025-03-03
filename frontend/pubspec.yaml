@@ -80,7 +80,10 @@ flutter:
     - assets/icons/icon-notification.png
     - assets/icons/icon-control.png
     - assets/icons/icon-back.png
-    - assets/images/Sensor-Suhu.png
+    - assets/images/Sensor-Suhu.jpg
+    - assets/images/Sensor-pH.jpg
+    - assets/images/Sensor-Salinitas.png
+    - assets/images/Sensor-Turbidity.jpg
   # An image assets can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

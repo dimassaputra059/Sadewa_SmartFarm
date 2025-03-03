@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_app/presentation/pages/beranda.dart';
+import 'package:frontend_app/presentation/pages/beranda/beranda.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gap/gap.dart';
 import '../../widget/background_widget.dart';
-import '../../widget/button/button_widget.dart';
-import '../../widget/input/placeholder_input.dart';
-import '../../widget/button/text_button_widget.dart';
+import '../../widget/button/button_filled.dart';
+import '../../widget/input/input_placeholder.dart';
+import '../../widget/button/button_text.dart';
 import 'lupa_password.dart';
 
 class Login extends StatelessWidget {
@@ -47,11 +47,11 @@ class Login extends StatelessWidget {
                     ),
                   ),
                   Gap(gapSize * 1.5),
-                  const PlaceholderInputWidget(
+                  const InputPlaceholder(
                     label: 'Username',
                     iconPath: 'assets/icons/icon-username.png',
                   ),
-                  const PlaceholderInputWidget(
+                  const InputPlaceholder(
                     label: 'Password',
                     isPassword: true,
                     iconPath: 'assets/icons/icon-password.png',
@@ -61,7 +61,7 @@ class Login extends StatelessWidget {
                   //
                   SizedBox(
                     width: size.width * 0.5,
-                    child: FilledButtonWidget(
+                    child: ButtonFilled(
                       text: 'Login',
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
@@ -74,7 +74,7 @@ class Login extends StatelessWidget {
                   Gap(gapSize * 0.8),
 
                   // **Tombol Lupa Password**
-                  TextButtonWidget(
+                  ButtonText(
                     text: 'Lupa Password ?',
                     fontSize: size.width * 0.045,
                     onPressed: () {

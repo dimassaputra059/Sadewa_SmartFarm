@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../widget/navigation/navigasi_monitoring.dart';
 import '../../widget/background_widget.dart';
-import 'history.dart';
+import 'riwayat_kualitas_air/riwayat_kualitas_air.dart';
 import 'kontrol_pakan_aerator.dart';
-import 'monitoring.dart';
+import 'monitoirng_sensor/monitoring.dart';
 import '../../widget/navigation/app_bar_widget.dart';
-import '../../widget/notifikasi_widget.dart'; // Import NotifikasiWidget
+import '../../blocks/kolom_notifikasi.dart'; // Import NotifikasiWidget
 
-class Notif extends StatelessWidget {
-  const Notif({super.key});
+class Notifikasi extends StatelessWidget {
+  const Notifikasi({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class Notif extends StatelessWidget {
 
           // **Konten Utama**
           Positioned(
-            top: screenHeight * 0.04,
-            left: screenWidth * 0.06,
-            right: screenWidth * 0.06,
+            top: screenHeight * 0.03,
+            left: screenWidth * 0.04,
+            right: screenWidth * 0.04,
             bottom: screenHeight * 0.10,
             child: Column(
               children: [
                 Expanded(
-                  child: NotifikasiWidget(), // Dibungkus dengan Expanded agar sesuai dengan tata letak
+                  child: KolomNotifikasi(), // Dibungkus dengan Expanded agar sesuai dengan tata letak
                 ),
               ],
             ),
@@ -57,12 +57,12 @@ class Notif extends StatelessWidget {
                 } else if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const History()),
+                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
                   );
                 } else if (index == 3) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Control()),
+                    MaterialPageRoute(builder: (context) => const KontrolPakanAerator()),
                   );
                 }
               },
