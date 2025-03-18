@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/blocks/tile_kolam.dart';
-import 'package:frontend_app/presentation/pages/manajemen/kolam/tambah_kolam.dart';
+import 'package:frontend_app/server/api_service.dart';
 import '../../blocks/main_header.dart';
-import '../../widget/button/button_add.dart';
 import '../../widget/background_widget.dart';
-import '../manajemen/kolam/edit_kolam.dart';
 
 class BerandaUser extends StatefulWidget {
   const BerandaUser({super.key});
@@ -14,27 +12,19 @@ class BerandaUser extends StatefulWidget {
 }
 
 class _BerandaUserState extends State<BerandaUser> {
-  List<Map<String, String>> pondList = [
-    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
-    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
-    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
-    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
-  ];
+  List<Map<String, dynamic>> pondList = [];
 
-  void _onEditPond(BuildContext context, Map<String, String> pond) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditKolam(
-          pondName: pond["name"]!,
-          status: pond["status"]!,
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    fetchPonds();
   }
 
-  void _onDeletePond(String pondName) {
-    print("Hapus $pondName");
+  Future<void> fetchPonds() async {
+    final data = await ApiService.getKolam();
+    setState(() {
+      pondList = data;
+    });
   }
 
   @override
@@ -64,25 +54,18 @@ class _BerandaUserState extends State<BerandaUser> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // **Title "Daftar Kolam" dan Button Tambah Kolam (Sejajar)**
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Daftar Kolam",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+                // **Judul "Daftar Kolam"**
+                Text(
+                  "Daftar Kolam",
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 15),
 
-                // **GridView untuk PondTile (Responsif)**
+                // **GridView untuk TileKolam**
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -99,13 +82,14 @@ class _BerandaUserState extends State<BerandaUser> {
                         itemBuilder: (context, index) {
                           var pond = pondList[index];
                           return TileKolam(
-                            pondName: pond["name"]!,
-                            status: pond["status"]!,
-                            date: pond["date"]!,
+                            pondId: pond["idPond"],
+                            pondName: pond["namePond"],
+                            status: pond["statusPond"],
+                            date: pond["createdAt"].toString().substring(0, 10),
                             pondData: pond,
-                            showMenu: false, // Tidak menampilkan menu titik tiga
-                            onEdit: (selectedPond) => _onEditPond(context, selectedPond),
-                            onDelete: () => _onDeletePond(pond["name"]!),
+                            onEdit: (_) {}, // Tidak digunakan
+                            onDelete: () {}, // Tidak digunakan
+                            showMenu: false, // Tidak menampilkan menu edit/hapus
                           );
                         },
                       );

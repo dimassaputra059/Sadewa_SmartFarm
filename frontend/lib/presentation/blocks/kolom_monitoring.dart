@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../color/color_constant.dart';
+import '../../server/api_service.dart';
 import '../pages/monitoring/monitoirng_sensor/pengaturan_sensor.dart';
 import '../widget/chart/chart_sensor.dart';
 
 class KolomMonitoring extends StatefulWidget {
-  final String sensorName;
-  final String sensorValue;
+  final String pondId;
+  final String namePond;
+  final String sensorName; // Nama tampilan sensor
+  final String sensorType; // 🔹 Sensor Type untuk API Path
   final List<Map<String, dynamic>> sensorData; // Data untuk chart
 
   const KolomMonitoring({
     super.key,
+    required this.pondId,
     required this.sensorName,
-    required this.sensorValue,
+    required this.sensorType, // 🔹 Tambahkan sensorType
     required this.sensorData,
+    required this.namePond,
   });
 
   @override
@@ -20,19 +25,48 @@ class KolomMonitoring extends StatefulWidget {
 }
 
 class _KolomMonitoringState extends State<KolomMonitoring> {
-  bool isPressed = false; // Menyimpan status apakah tombol sedang ditekan
+  bool isPressed = false;
+  String sensorValue = "--"; // 🔹 Nilai default sebelum API merespons
 
-  String formatSensorValue(String value, String sensorName) {
-    if (sensorName.toLowerCase().contains('suhu')) {
-      return '$value °C';
-    } else if (sensorName.toLowerCase().contains('salinitas')) {
-      return '$value ppt';
-    } else if (sensorName.toLowerCase().contains('kekeruhan')) {
-      return '$value NTU';
+  @override
+  void initState() {
+    super.initState();
+    _fetchSensorValue(); // 🔹 Ambil data saat widget pertama kali dibuat
+  }
+
+  /// **🔹 Fungsi untuk mengambil data sensor dari API**
+  void _fetchSensorValue() async {
+    Map<String, dynamic>? sensorData =
+    await ApiService.getMonitoringData(widget.pondId, widget.sensorType);
+
+    if (sensorData != null && sensorData.containsKey("sensor_data")) {
+      setState(() {
+        double rawValue = double.tryParse(sensorData["sensor_data"].toString()) ?? 0.0;
+        sensorValue = rawValue.toStringAsFixed(1); // ✅ Format ke 1 angka di belakang koma
+      });
     } else {
-      return value; // pH tetap tanpa satuan
+      setState(() {
+        sensorValue = "Error"; // 🔹 Jika gagal mengambil data
+      });
     }
   }
+
+  /// **🔹 Format nilai sensor berdasarkan `sensorType`**
+  String formatSensorValue(String value, String sensorType) {
+    double parsedValue = double.tryParse(value) ?? 0.0; // ✅ Konversi ke double
+    String formattedValue = parsedValue.toStringAsFixed(1); // ✅ Tetap 1 angka desimal
+
+    if (sensorType == 'temperature') {
+      return '$formattedValue °C';
+    } else if (sensorType == 'salinity') {
+      return '$formattedValue ppt';
+    } else if (sensorType == 'turbidity') {
+      return '$formattedValue NTU';
+    } else {
+      return formattedValue; // pH tetap tanpa satuan
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +92,7 @@ class _KolomMonitoringState extends State<KolomMonitoring> {
       ),
       child: Stack(
         children: [
-          // **Box Background untuk Sensor Name dengan GestureDetector**
+          // 🔹 Box Background untuk Sensor Name
           Positioned(
             top: 0,
             left: 0,
@@ -70,12 +104,10 @@ class _KolomMonitoringState extends State<KolomMonitoring> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PengaturanSensor(
+                      pondId: widget.pondId,
                       sensorName: widget.sensorName,
-                      currentValue: widget.sensorValue,
-                      highestValue: '30',
-                      lowestValue: '15',
-                      initialHighValue: 25,
-                      initialLowValue: 20,
+                      currentValue: sensorValue,
+                      namePond: widget.namePond, // ✅ Pastikan nilai sensor terbaru dikirim
                     ),
                   ),
                 );
@@ -113,12 +145,12 @@ class _KolomMonitoringState extends State<KolomMonitoring> {
             ),
           ),
 
-          // **Sensor Value**
+          // 🔹 Sensor Value dari API
           Positioned(
             right: paddingValue,
             top: screenHeight * 0.01,
             child: Text(
-              formatSensorValue(widget.sensorValue, widget.sensorName),
+              formatSensorValue(sensorValue, widget.sensorType), // ✅ Format berdasarkan sensorType
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: fontSize * 1.2,
@@ -127,7 +159,7 @@ class _KolomMonitoringState extends State<KolomMonitoring> {
             ),
           ),
 
-          // **Garis pemisah**
+          // 🔹 Garis Pemisah
           Positioned(
             top: screenHeight * 0.05,
             right: paddingValue,
@@ -138,7 +170,7 @@ class _KolomMonitoringState extends State<KolomMonitoring> {
             ),
           ),
 
-          // **Grafik Sensor**
+          // 🔹 Grafik Sensor
           Positioned(
             top: screenHeight * 0.08,
             left: paddingValue,

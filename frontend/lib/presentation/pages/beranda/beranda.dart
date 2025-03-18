@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/blocks/tile_kolam.dart';
 import 'package:frontend_app/presentation/pages/manajemen/kolam/tambah_kolam.dart';
+import 'package:frontend_app/server/api_service.dart';
 import '../../blocks/main_header.dart';
 import '../../widget/button/button_add.dart';
 import '../../widget/navigation/navigasi_beranda.dart';
 import '../../widget/background_widget.dart';
+import '../../widget/pop_up/custom_dialog_button.dart';
 import '../manajemen/kolam/edit_kolam.dart';
 import 'manajemen_user.dart';
 
@@ -16,37 +18,60 @@ class Beranda extends StatefulWidget {
 }
 
 class _BerandaState extends State<Beranda> {
-  List<Map<String, String>> pondList = [
-    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
-    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
-    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
-    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
-    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
-    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
-    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
-    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
-    {"name": "Kolam 1", "status": "Aktif", "date": "06 Februari 2025"},
-    {"name": "Kolam 2", "status": "Aktif", "date": "10 Februari 2025"},
-    {"name": "Kolam 3", "status": "Tidak Aktif", "date": "15 Februari 2025"},
-    {"name": "Kolam 4", "status": "Aktif", "date": "20 Februari 2025"},
-  ];
+  List<Map<String, dynamic>> pondList = [];
 
-  void _onEditPond(BuildContext context, Map<String, String> pond) {
-    Navigator.push(
+  @override
+  void initState() {
+    super.initState();
+    fetchPonds();
+  }
+
+  Future<void> fetchPonds() async {
+    final data = await ApiService.getKolam();
+    setState(() {
+      pondList = data;
+    });
+  }
+
+  void _onEditPond(BuildContext context, Map<String, dynamic> pond) async {
+    final updatedPond = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditKolam(
-          pondName: pond["name"]!,
-          status: pond["status"]!,
+          id: pond["_id"],
+          pondId: pond["idPond"],
+          pondName: pond["namePond"],
+          status: pond["statusPond"],
         ),
       ),
     );
+
+    // ✅ Jika hasil edit tidak null, perbarui daftar kolam
+    if (updatedPond != null) {
+      fetchPonds();
+    }
   }
 
 
-  void _onDeletePond(String pondName) {
-    print("Hapus $pondName");
+  void _onDeletePond(String id, String pondName) {
+    CustomDialogButton.show(
+      context: context,
+      title: "Konfirmasi Hapus",
+      message: "Apakah Anda yakin ingin menghapus kolam \"$pondName\"? Tindakan ini tidak dapat dibatalkan.",
+      confirmText: "Hapus",
+      cancelText: "Batal",
+      isWarning: true,
+      onConfirm: () async {
+        bool deleted = await ApiService.deleteKolam(id);
+        if (deleted) {
+          setState(() {
+            pondList.removeWhere((pond) => pond["_id"] == id);
+          });
+        }
+      },
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +82,12 @@ class _BerandaState extends State<Beranda> {
       body: Stack(
         children: [
           const BackgroundWidget(),
-
-          // **Header**
           Positioned(
             left: 0,
             right: 0,
             top: screenHeight * 0.05,
             child: const MainHeader(),
           ),
-
-          // **Konten Utama**
           Positioned(
             top: screenHeight * 0.20,
             left: screenWidth * 0.06,
@@ -75,7 +96,6 @@ class _BerandaState extends State<Beranda> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // **Title "Daftar Kolam" dan Button Tambah Kolam (Sejajar)**
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -89,22 +109,25 @@ class _BerandaState extends State<Beranda> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ButtonAdd(
-                        text: "Tambah Kolam",
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const TambahKolam()),
-                          );
-                        },
-                      ),
+                    ButtonAdd(
+                      text: "Tambah Kolam",
+                      onPressed: () async {
+                        bool? result = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TambahKolam(
+                              onKolamAdded: fetchPonds, // ✅ Panggil fungsi refresh setelah tambah kolam
+                            ),
+                          ),
+                        );
+
+                        if (result == true) {
+                          fetchPonds(); // ✅ Refresh daftar kolam jika berhasil ditambahkan
+                        }
+                      },
                     ),
                   ],
                 ),
                 const SizedBox(height: 15),
-
-                // **GridView untuk PondTile (Responsif)**
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -118,19 +141,19 @@ class _BerandaState extends State<Beranda> {
                           childAspectRatio: 1.2,
                         ),
                         itemCount: pondList.length,
-                          itemBuilder: (context, index) {
-                            var pond = pondList[index];
-                            return TileKolam(
-                              pondName: pond["name"]!,
-                              status: pond["status"]!,
-                              date: pond["date"]!,
-                              showMenu: true,
-                              pondData: pond,
-                              onEdit: (selectedPond) => _onEditPond(context, selectedPond),
-                              onDelete: () => _onDeletePond(pond["name"]!),
-                            );
-                          }
-
+                        itemBuilder: (context, index) {
+                          var pond = pondList[index];
+                          return TileKolam(
+                            pondId: pond["idPond"],
+                            pondName: pond["namePond"],
+                            status: pond["statusPond"],
+                            date: pond["createdAt"].toString().substring(0, 10),
+                            pondData: pond,
+                            onEdit: (selectedPond) => _onEditPond(context, selectedPond),
+                            onDelete: () => _onDeletePond(pond["_id"], pond["namePond"]),
+                            showMenu: true,
+                          );
+                        },
                       );
                     },
                   ),
@@ -138,8 +161,6 @@ class _BerandaState extends State<Beranda> {
               ],
             ),
           ),
-
-          // **Navigasi Beranda**
           Positioned(
             left: 0,
             right: 0,

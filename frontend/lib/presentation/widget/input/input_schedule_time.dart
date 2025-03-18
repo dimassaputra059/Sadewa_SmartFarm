@@ -3,10 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 class InputScheduleTime extends StatefulWidget {
   final String label;
+  final TimeOfDay initialTime;
+  final ValueChanged<TimeOfDay> onTimeSelected; // Callback untuk mengupdate waktu
 
   const InputScheduleTime({
     super.key,
     required this.label,
+    required this.initialTime,
+    required this.onTimeSelected,
   });
 
   @override
@@ -14,33 +18,26 @@ class InputScheduleTime extends StatefulWidget {
 }
 
 class _InputScheduleTimeState extends State<InputScheduleTime> {
-  TimeOfDay _selectedTime = const TimeOfDay(hour: 7, minute: 0);
+  late TimeOfDay _selectedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTime = widget.initialTime; // Gunakan waktu awal dari parameter
+  }
 
   // Fungsi untuk menampilkan Time Picker
   Future<void> _pickTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            primaryColor: Colors.blue,
-            hintColor: Colors.blue,
-            timePickerTheme: const TimePickerThemeData(
-              dialHandColor: Colors.blue,
-              hourMinuteColor: Colors.white,
-              hourMinuteTextColor: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null) {
       setState(() {
         _selectedTime = picked;
       });
+      widget.onTimeSelected(picked); // Kirim data waktu yang dipilih ke parent
     }
   }
 
@@ -49,39 +46,39 @@ class _InputScheduleTimeState extends State<InputScheduleTime> {
     return SizedBox(
       height: 45,
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Membuat elemen tetap rapat
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Label yang dapat dikonfigurasi
+          // Label
           Text(
             "${widget.label} :",
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Colors.white, // Warna teks putih
+              color: Colors.white,
             ),
           ),
-          const SizedBox(width: 8), // Jarak kecil antara label dan waktu
+          const SizedBox(width: 8),
 
-          // Waktu yang dapat diklik & Ikon jam
+          // Waktu yang dapat diklik
           GestureDetector(
             onTap: () => _pickTime(context),
             child: Row(
-              mainAxisSize: MainAxisSize.min, // Membuat teks dan ikon tetap berdekatan
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _selectedTime.format(context), // Format waktu (07:00)
+                  _selectedTime.format(context),
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF003A5D), // Warna biru tua
+                    color: const Color(0xFF003A5D),
                   ),
                 ),
-                const SizedBox(width: 0), // Jarak lebih kecil antara waktu dan ikon
+                const SizedBox(width: 4),
 
                 // Ikon jam
                 IconButton(
                   icon: const Icon(Icons.access_time, color: Colors.white, size: 18),
-                  onPressed: () => _pickTime(context), // Klik ikon untuk memilih waktu
+                  onPressed: () => _pickTime(context),
                 ),
               ],
             ),

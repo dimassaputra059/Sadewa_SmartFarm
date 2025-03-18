@@ -2,14 +2,27 @@ import 'package:flutter/material.dart';
 import '../../../color/color_constant.dart';
 
 class ButtonSwitch extends StatefulWidget {
-  const ButtonSwitch({super.key});
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const ButtonSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   _ButtonSwitchState createState() => _ButtonSwitchState();
 }
 
 class _ButtonSwitchState extends State<ButtonSwitch> {
-  bool isSwitched = false;
+  late bool isSwitched;
+
+  @override
+  void initState() {
+    super.initState();
+    isSwitched = widget.value; // Gunakan nilai awal dari parent
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,27 +30,28 @@ class _ButtonSwitchState extends State<ButtonSwitch> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 25, // Atur tinggi switch agar tidak melebihi 25
+          height: 25,
           child: Transform.scale(
-            scale: 0.75, // Sesuaikan skala untuk menyesuaikan tinggi
+            scale: 0.75,
             child: Switch(
               value: isSwitched,
               onChanged: (value) {
                 setState(() {
                   isSwitched = value;
                 });
+                widget.onChanged(value); // Kirim status ke parent
               },
-              activeColor: ColorConstant.primary, // Warna biru saat ON
-              inactiveTrackColor: Colors.white, // Warna default saat OFF
+              activeColor: ColorConstant.primary,
+              inactiveTrackColor: Colors.white,
             ),
           ),
         ),
 
         Text(
-          "Status: ${isSwitched ? "On " : "Off"}",
+          "Status: ${isSwitched ? "On" : "Off"}",
           style: TextStyle(
             fontSize: 14,
-            fontStyle: FontStyle.italic, // Mengubah teks menjadi miring (italic)
+            fontStyle: FontStyle.italic,
             color: ColorConstant.primary,
           ),
         ),

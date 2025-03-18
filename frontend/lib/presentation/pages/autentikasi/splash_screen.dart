@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_app/presentation/pages/autentikasi/login.dart';
 import 'package:frontend_app/presentation/widget/background_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../beranda/beranda.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,11 +17,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    _checkToken();
+  }
+
+  Future<void> _checkToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Beranda()),
+      );
+    } else {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const Login()),
       );
-    });
+    }
   }
 
   @override
@@ -30,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           const BackgroundWidget(),
 
-          // Konten di tengah layar
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -42,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 const SizedBox(height: 10),
 
-                // Nama Aplikasi
                 Text(
                   "Sadewa Smartfarm",
                   style: GoogleFonts.poppins(

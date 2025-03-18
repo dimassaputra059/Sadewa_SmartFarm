@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_app/server/api_service.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
 import '../../../widget/button/button_filled.dart';
 import '../../../widget/input/input_standart.dart';
 import '../../../widget/background_widget.dart';
 import '../../../widget/input/input_status.dart';
+import '../../../widget/pop_up/custom_dialog.dart';
 
 class EditKolam extends StatefulWidget {
+  final String id; // ✅ Tambahkan id
+  final String pondId;
   final String pondName;
   final String status;
 
   const EditKolam({
     super.key,
+    required this.id,
+    required this.pondId,
     required this.pondName,
     required this.status,
   });
@@ -21,17 +27,58 @@ class EditKolam extends StatefulWidget {
 
 class _EditKolamState extends State<EditKolam> {
   late TextEditingController nameController;
+  String? selectedStatus;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.pondName);
+    selectedStatus = widget.status;
   }
 
   @override
   void dispose() {
     nameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateKolam() async {
+    String newName = nameController.text.trim();
+    String newStatus = selectedStatus ?? "Aktif";
+
+    if (newName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Nama kolam tidak boleh kosong")),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    // ✅ Kirim id ke API
+    var updatedKolam = await ApiService.editKolam(widget.id, widget.pondId, newName, newStatus);
+
+    if (!mounted) return;
+
+    setState(() => _isLoading = false);
+
+    if (updatedKolam != null) {
+      CustomDialog.show(
+        context: context,
+        isSuccess: true,
+        message: "Kolam berhasil diperbarui!",
+        onComplete: () {
+          Navigator.pop(context, updatedKolam);
+        },
+      );
+    } else {
+      CustomDialog.show(
+        context: context,
+        isSuccess: false,
+        message: "Gagal memperbarui kolam. Coba lagi.",
+      );
+    }
   }
 
   @override
@@ -43,11 +90,10 @@ class _EditKolamState extends State<EditKolam> {
           Navigator.pop(context);
         },
       ),
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
-
           Padding(
             padding: const EdgeInsets.all(30.0),
             child: Column(
@@ -57,12 +103,20 @@ class _EditKolamState extends State<EditKolam> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // **Input Nama Kolam**
                         InputStandart(
                           label: "Nama Kolam",
+                          controller: nameController,
                         ),
-                        // **Input Status Kolam Aktif/Non-Aktif**
-                        InputStatus(),
+
+                        // ✅ Pastikan ada nilai default
+                        InputStatus(
+                          initialValue: selectedStatus ?? "Aktif",
+                          onChanged: (newStatus) {
+                            setState(() {
+                              selectedStatus = newStatus;
+                            });
+                          },
+                        ),
 
                         const SizedBox(height: 20),
                       ],
@@ -70,15 +124,12 @@ class _EditKolamState extends State<EditKolam> {
                   ),
                 ),
 
-                // **Tombol Simpan**
                 SizedBox(
                   width: double.infinity,
                   child: ButtonFilled(
                     text: "Simpan",
                     isFullWidth: true,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: _isLoading ? () {} : _updateKolam,
                   ),
                 ),
               ],

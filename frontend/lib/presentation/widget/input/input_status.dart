@@ -3,14 +3,28 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class InputStatus extends StatefulWidget {
-  const InputStatus({super.key});
+  final String initialValue; // 🟢 Tambahkan parameter initialValue
+  final ValueChanged<String> onChanged; // 🟢 Callback ketika status berubah
+
+  const InputStatus({
+    super.key,
+    required this.initialValue, // 🟢 Wajib diisi
+    required this.onChanged, // 🟢 Wajib diisi
+  });
 
   @override
   _InputStatusState createState() => _InputStatusState();
 }
 
 class _InputStatusState extends State<InputStatus> {
-  String? selectedRole;
+  late String selectedRole; // 🟢 Gunakan late agar nilai awal bisa di-set
+
+  @override
+  void initState() {
+    super.initState();
+    selectedRole = widget.initialValue; // 🟢 Set nilai awal dari parameter
+  }
+
   bool isDropdownOpened = false;
 
   @override
@@ -26,24 +40,24 @@ class _InputStatusState extends State<InputStatus> {
           style: GoogleFonts.poppins(
             fontSize: size.width * 0.04,
             fontWeight: FontWeight.w600,
-            color: Colors.white, // Warna teks label
+            color: Colors.white,
           ),
         ),
-        const Gap(8), // Jarak antara label dan input
+        const Gap(8),
 
-        // Input field dengan tinggi responsif
+        // Input field
         SizedBox(
-          height: size.height * 0.05 < 40 ? 40 : size.height * 0.05, // Tinggi minimal 40px
+          height: size.height * 0.05 < 40 ? 40 : size.height * 0.05,
           child: TextField(
             readOnly: true,
-            controller: TextEditingController(text: selectedRole ?? ""),
+            controller: TextEditingController(text: selectedRole), // 🟢 Tampilkan status yang dipilih
             style: GoogleFonts.poppins(
               fontSize: size.width * 0.04,
               color: Colors.white,
             ),
-            textAlignVertical: TextAlignVertical.center, // **Teks di tengah vertikal**
+            textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               suffixIcon: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -56,7 +70,6 @@ class _InputStatusState extends State<InputStatus> {
                   child: const Icon(Icons.arrow_drop_up, color: Colors.white, size: 24),
                 ),
               ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
               fillColor: Colors.transparent,
               filled: true,
               enabledBorder: OutlineInputBorder(
@@ -77,10 +90,10 @@ class _InputStatusState extends State<InputStatus> {
           ),
         ),
 
-        // Daftar opsi yang muncul saat dropdown terbuka
+        // Dropdown List
         if (isDropdownOpened)
           Container(
-            width: size.width * 0.9, // Sesuaikan dengan lebar layar
+            width: size.width * 0.9,
             margin: EdgeInsets.only(top: size.height * 0.008),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -97,12 +110,12 @@ class _InputStatusState extends State<InputStatus> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16), // Mengurangi padding
-                    visualDensity: VisualDensity.compact, // Mengurangi tinggi ListTile
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    visualDensity: VisualDensity.compact,
                     title: Text(
                       role,
                       style: GoogleFonts.poppins(
-                        fontSize: size.width * 0.04, // Sedikit lebih kecil agar lebih rapi
+                        fontSize: size.width * 0.04,
                         fontWeight: FontWeight.w400,
                         color: Colors.black87,
                       ),
@@ -112,6 +125,7 @@ class _InputStatusState extends State<InputStatus> {
                         selectedRole = role;
                         isDropdownOpened = false;
                       });
+                      widget.onChanged(role); // 🟢 Kirim status baru ke parent widget
                     },
                   ),
                 );

@@ -1,32 +1,102 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../color/color_constant.dart';
+import '../../server/api_service.dart';
 
 class KolomNotifikasi extends StatefulWidget {
-  const KolomNotifikasi({super.key});
+  final String pondId;
+  const KolomNotifikasi({super.key, required this.pondId});
 
   @override
   _KolomNotifikasiState createState() => _KolomNotifikasiState();
 }
 
 class _KolomNotifikasiState extends State<KolomNotifikasi> {
-  final List<Map<String, dynamic>> notifikasiList = [
-    {"jenis": "Peringatan", "judul": "Pakan Udang", "waktu": "15 Menit yang lalu", "deskripsi": "Pakan udang di dalam tabung hampir habis, harap segera isi ulang sebelum waktu pemberian pakan.", "warna": Colors.red},
-    {"jenis": "Peringatan", "judul": "Kualitas Air", "waktu": "35 Menit yang lalu", "deskripsi": "Kualitas air menurun, segera periksa parameter.", "warna": Colors.red},
-    {"jenis": "Pemberitahuan", "judul": "Parameter Sensor", "waktu": "50 Menit yang lalu", "deskripsi": "Sensor bekerja dengan baik.", "warna": Colors.amber},
-    {"jenis": "Pemberitahuan", "judul": "Pelontar Pakan", "waktu": "1 Hari yang lalu", "deskripsi": "Pelontar pakan dalam kondisi normal.", "warna": Colors.amber},
-    {"jenis": "Pemberitahuan", "judul": "Aerator", "waktu": "2 Hari yang lalu", "deskripsi": "Aerator berjalan normal.", "warna": Colors.amber},
-    {"jenis": "Peringatan", "judul": "Pakan Udang", "waktu": "15 Menit yang lalu", "deskripsi": "Pakan udang di dalam tabung hampir habis, harap segera isi ulang sebelum waktu pemberian pakan.", "warna": Colors.red},
-    {"jenis": "Peringatan", "judul": "Kualitas Air", "waktu": "35 Menit yang lalu", "deskripsi": "Kualitas air menurun, segera periksa parameter.", "warna": Colors.red},
-    {"jenis": "Pemberitahuan", "judul": "Parameter Sensor", "waktu": "50 Menit yang lalu", "deskripsi": "Sensor bekerja dengan baik.", "warna": Colors.amber},
-    {"jenis": "Pemberitahuan", "judul": "Pelontar Pakan", "waktu": "1 Hari yang lalu", "deskripsi": "Pelontar pakan dalam kondisi normal.", "warna": Colors.amber},
-    {"jenis": "Pemberitahuan", "judul": "Aerator", "waktu": "2 Hari yang lalu", "deskripsi": "Aerator berjalan normal.", "warna": Colors.amber},
-  ];
-
+  List<Map<String, dynamic>> notifikasiList = [];
+  Map<String, dynamic>? selectedNotification;
   int _currentPage = 0;
   static const int itemsPerPage = 6;
   int? _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifications();
+  }
+
+  Future<void> _fetchNotifications() async {
+    final notifications = await ApiService.getNotificationsByPondId(widget.pondId);
+    if (notifications != null) {
+      setState(() {
+        notifikasiList = notifications.map<Map<String, dynamic>>((notif) {
+          String jenis = _getNotificationType(notif["type"]);
+          Color warna = jenis == "Peringatan" ? Colors.red : Colors.amber;
+          return {
+            "id": notif["_id"],
+            "jenis": jenis,
+            "judul": notif["title"] ?? "Notifikasi",
+            "waktu": _formatTime(notif["time"]),
+            "message": notif["message"] ?? "Tidak ada pesan",
+            "warna": warna,
+            "status": notif["status"] ?? "unread", // ✅ Tambahkan status read/unread dari API
+          };
+        }).toList();
+      });
+    }
+  }
+
+
+  Future<void> _fetchNotificationDetail(String id, int index) async {
+    final notifDetail = await ApiService.getNotificationById(id);
+    if (notifDetail != null) {
+      String jenis = _getNotificationType(notifDetail["type"]);
+      Color warna = jenis == "Peringatan" ? Colors.red : Colors.amber;
+
+      int globalIndex = _currentPage * itemsPerPage + index;
+
+      setState(() {
+        selectedNotification = {
+          "jenis": jenis,
+          "judul": notifDetail["title"] ?? "Notifikasi",
+          "message": notifDetail["message"] ?? "Tidak ada pesan",
+          "warna": warna,
+        };
+        _selectedIndex = globalIndex;
+      });
+
+      bool success = await ApiService.markNotificationAsRead(id);
+      if (success) {
+        setState(() {
+          notifikasiList[globalIndex]["status"] = "read"; // ✅ Ubah status menjadi "read"
+        });
+      }
+    }
+  }
+
+
+
+  String _formatTime(String timestamp) {
+    DateTime notifTime = DateTime.parse(timestamp).toLocal();
+    Duration difference = DateTime.now().difference(notifTime);
+
+    if (difference.inMinutes < 1) {
+      return "Baru saja";
+    } else if (difference.inMinutes < 60) {
+      return "${difference.inMinutes} menit yang lalu";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours} jam yang lalu";
+    } else {
+      return "${difference.inDays} hari yang lalu";
+    }
+  }
+
+  String _getNotificationType(String? type) {
+    const warningTypes = ["feed_alert", "water_quality_alert"];
+    const infoTypes = ["feed_schedule_update", "aerator_control_update", "threshold_update"];
+
+    if (warningTypes.contains(type)) return "Peringatan";
+    if (infoTypes.contains(type)) return "Pemberitahuan";
+    return "Pemberitahuan";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,27 +115,35 @@ class _KolomNotifikasiState extends State<KolomNotifikasi> {
           Expanded(
             child: Row(
               children: [
+                // ✅ List Notifikasi
                 Expanded(
                   flex: 2,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.transparent,
-                      border: const Border(bottom: BorderSide(color: Colors.white)),
+                      border: Border(bottom: BorderSide(color: Colors.white)),
                     ),
-                    child: ListView.separated(
+                    child: notifikasiList.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.separated(
                       itemCount: currentNotifikasi.length,
                       separatorBuilder: (context, index) => const Divider(color: Colors.white, height: 1),
                       itemBuilder: (context, index) {
                         final notif = currentNotifikasi[index];
-                        bool isSelected = _selectedIndex == index;
+
+                        // ✅ Hitung index global
+                        int globalIndex = _currentPage * itemsPerPage + index;
+
+                        bool isSelected = _selectedIndex == globalIndex;
+
                         return Material(
                           color: isSelected ? const Color(0x80D9DCD6) : Colors.transparent,
                           child: ListTile(
-                            contentPadding: EdgeInsets.only(left: 4),
+                            contentPadding: const EdgeInsets.only(left: 4),
                             title: Text(
                               "[${notif["jenis"]}]\n${notif["judul"]}",
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: notif["status"] == "unread" ? ColorConstant.primary : Colors.white, // ✅ Perubahan warna
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -74,28 +152,26 @@ class _KolomNotifikasiState extends State<KolomNotifikasi> {
                               notif["waktu"],
                               style: TextStyle(fontSize: 11, color: ColorConstant.primary),
                             ),
-                            onTap: () {
-                              setState(() {
-                                _selectedIndex = index;
-                              });
-                            },
+                            onTap: () => _fetchNotificationDetail(notif["id"], index),
                           ),
                         );
                       },
                     ),
+
                   ),
                 ),
 
                 Container(width: 1, color: Colors.white),
 
+                // ✅ Detail Notifikasi (Dikembalikan ke Format Asli)
                 Expanded(
                   flex: 3,
                   child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      border: const Border(bottom: BorderSide(color: Colors.white)),
-                    ),
                     padding: const EdgeInsets.only(top: 7),
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border(bottom: BorderSide(color: Colors.white)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -109,74 +185,48 @@ class _KolomNotifikasiState extends State<KolomNotifikasi> {
                         const SizedBox(height: 6),
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
-                          child: Text("Ada pemberitahuan baru untuk anda", style: TextStyle(fontSize: 12, color: ColorConstant.primary),),
+                          child: Text("Ada pemberitahuan baru untuk anda", style: TextStyle(fontSize: 12, color: ColorConstant.primary)),
                         ),
+                        const SizedBox(height: 6),
                         const Divider(color: Colors.white),
-                        _selectedIndex != null
-                            ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 15),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        children: [
-                                          WidgetSpan(
-                                            alignment: PlaceholderAlignment.middle,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(right: 6), // Jarak antara ikon dan teks
-                                              child: Icon(
-                                                currentNotifikasi[_selectedIndex!]["jenis"] == "Peringatan"
-                                                    ? Icons.warning_amber_rounded
-                                                    : Icons.notifications,
-                                                color: currentNotifikasi[_selectedIndex!]["warna"],
-                                                size: 18,
-                                              ),
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: "[${currentNotifikasi[_selectedIndex!]["jenis"]}]\n",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: currentNotifikasi[_selectedIndex!]["warna"],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const WidgetSpan(
-                                        child: SizedBox(height: 35), // Jarak antara jenis dan judul
-                                      ),
-                                      TextSpan(
-                                        text: currentNotifikasi[_selectedIndex!]["judul"],
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                            color: currentNotifikasi[_selectedIndex!]["warna"],
-                                        ),
-                                      ),
-                                    ],
+                        selectedNotification != null
+                            ? Padding(
+                          padding: const EdgeInsets.only(left: 10, top: 15),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    child: Icon(
+                                      selectedNotification!["jenis"] == "Peringatan"
+                                          ? Icons.warning_amber_rounded
+                                          : Icons.notifications,
+                                      color: selectedNotification!["warna"],
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  currentNotifikasi[_selectedIndex!]["deskripsi"],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: currentNotifikasi[_selectedIndex!]["warna"],
-                                  ),
+                                TextSpan(
+                                  text: "[${selectedNotification!["jenis"]}]\n",
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: selectedNotification!["warna"]),
                                 ),
-                              ),
-                            ]
+                                TextSpan(
+                                  text: "\n${selectedNotification!["judul"]}",
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: ColorConstant.primary),
+                                ),
+                                TextSpan(
+                                  text: "\n\n${selectedNotification!["message"]}",
+                                  style: TextStyle(fontSize: 13, color: ColorConstant.primary),
+                                ),
+                              ],
+                            ),
+                          ),
                         )
-                            : Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Text("Pilih notifikasi untuk melihat detail", style: TextStyle(fontSize: 14, color: ColorConstant.primary),),
+                            : const Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text("Pilih notifikasi untuk melihat detail", style: TextStyle(fontSize: 14, color: Colors.white)),
                         ),
                       ],
                     ),
@@ -186,39 +236,35 @@ class _KolomNotifikasiState extends State<KolomNotifikasi> {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left, color: Color(0xFF16425B)),
-                  onPressed: _currentPage > 0 ? () => setState(() => _currentPage--) : null,
+          // ✅ Pagination Controls
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left, color: Color(0xFF16425B), size: 30),
+                onPressed: _currentPage > 0 ? () => setState(() => _currentPage--) : null,
+              ),
+              Container(
+                width: 50, // ✅ Atur lebar agar lebih panjang
+                alignment: Alignment.center, // ✅ Pusatkan teks di dalam container
+                child: Text(
+                  "${_currentPage + 1} / ${(notifikasiList.length / itemsPerPage).ceil()}",
+                  style: const TextStyle(
+                    color: Colors.white, // ✅ Warna putih
+                    fontWeight: FontWeight.w600, // ✅ Font-weight 600
+                    fontSize: 14, // ✅ Ukuran font (opsional)
+                  ),
                 ),
-                ...List.generate((notifikasiList.length / itemsPerPage).ceil(), (index) {
-                  int pageNumber = index + 1;
-                  return GestureDetector(
-                    onTap: () => setState(() => _currentPage = index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        "$pageNumber",
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: _currentPage == index ? FontWeight.bold : FontWeight.normal,
-                          color: _currentPage == index ? Colors.blue : const Color(0xFF16425B),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right, color: Color(0xFF16425B)),
-                  onPressed: endIndex < notifikasiList.length ? () => setState(() => _currentPage++) : null,
-                ),
-              ],
-            ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right, color: Color(0xFF16425B), size: 30),
+                onPressed: _currentPage < (notifikasiList.length / itemsPerPage).ceil() - 1
+                    ? () => setState(() => _currentPage++)
+                    : null,
+              ),
+            ],
           ),
+
         ],
       ),
     );

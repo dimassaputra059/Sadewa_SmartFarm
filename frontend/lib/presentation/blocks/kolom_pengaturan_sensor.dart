@@ -1,29 +1,101 @@
 import 'package:flutter/material.dart';
 import '../../color/color_constant.dart';
+import '../../server/api_service.dart';
 import '../widget/button/button_outlined.dart';
 import '../widget/input/input_value.dart';
 import '../widget/button/button_text.dart';
 import '../pages/monitoring/monitoirng_sensor/informasi_sensor.dart';
 
-class KolomPengaturanSensor extends StatelessWidget {
+class KolomPengaturanSensor extends StatefulWidget {
+  final String pondId;
   final String sensorName;
+  final String namePond;
   final String sensorType;
-  final String currentValue;
-  final String highestValue;
-  final String lowestValue;
-  final int initialHighValue;
-  final int initialLowValue;
 
   const KolomPengaturanSensor({
     super.key,
+    required this.pondId,
     required this.sensorName,
-    required this.sensorType,
-    required this.currentValue,
-    required this.highestValue,
-    required this.lowestValue,
-    required this.initialHighValue,
-    required this.initialLowValue,
+    required this.sensorType, required this.namePond,
   });
+
+  @override
+  _KolomPengaturanSensorState createState() => _KolomPengaturanSensorState();
+}
+
+class _KolomPengaturanSensorState extends State<KolomPengaturanSensor> {
+  double? highestValue;
+  double? lowestValue;
+  double? tempHighValue;
+  double? tempLowValue;
+  double? currentSensorValue;
+
+  late double recommendedHighValue;
+  late double recommendedLowValue;
+
+  @override
+  void initState() {
+    super.initState();
+    setRecommendedValues();
+    fetchSensorConfig();
+  }
+
+  void setRecommendedValues() {
+    switch (widget.sensorType.toLowerCase()) {
+      case "ph":
+        recommendedHighValue = 9;
+        recommendedLowValue = 7;
+        break;
+      case "salinity":
+        recommendedHighValue = 35;
+        recommendedLowValue = 15;
+        break;
+      case "turbidity":
+        recommendedHighValue = 40;
+        recommendedLowValue = 0;
+        break;
+      case "temperature":
+      default:
+        recommendedHighValue = 32;
+        recommendedLowValue = 26;
+        break;
+    }
+  }
+
+  Future<void> fetchSensorConfig() async {
+    String basePath = "thresholds/${widget.sensorType.toLowerCase()}";
+    String sensorType = widget.sensorType.toLowerCase();
+
+    Map<String, dynamic>? highestData = await ApiService.getDeviceConfig(widget.pondId, "$basePath/high");
+    Map<String, dynamic>? lowestData = await ApiService.getDeviceConfig(widget.pondId, "$basePath/low");
+    Map<String, dynamic>? sensorValueData = await ApiService.getMonitoringData(widget.pondId, sensorType);
+
+    setState(() {
+      highestValue = highestData?["data"]?.toDouble();
+      lowestValue = lowestData?["data"]?.toDouble();
+      tempHighValue = highestValue ?? recommendedHighValue;
+      tempLowValue = lowestValue ?? recommendedLowValue;
+      currentSensorValue = sensorValueData?["sensor_data"]?.toDouble();
+    });
+  }
+
+  Future<void> saveThresholdValues() async {
+    if (tempHighValue != null && tempLowValue != null) {
+      String basePath = "thresholds/${widget.sensorType.toLowerCase()}";
+      await ApiService.updateDeviceConfig(widget.pondId, "$basePath/high", tempHighValue);
+      await ApiService.updateDeviceConfig(widget.pondId, "$basePath/low", tempLowValue);
+
+      setState(() {
+        highestValue = tempHighValue;
+        lowestValue = tempLowValue;
+      });
+    }
+  }
+
+  String formatNumber(double? number) {
+    if (number == null) return "--";
+    return number % 1 == 0 ? number.toInt().toString() : number.toStringAsFixed(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,30 +104,36 @@ class KolomPengaturanSensor extends StatelessWidget {
 
     String unit = "°C";
     String label = "Suhu";
+    double minValue = -50, maxValue = 100, step = 1;
 
-    switch (sensorType.toLowerCase()) {
+    switch (widget.sensorType.toLowerCase()) {
       case "ph":
         unit = "pH";
         label = "pH";
+        minValue = 0;
+        maxValue = 14;
+        step = 0.01;
         break;
-      case "salinitas":
+      case "salinity":
         unit = "ppt";
         label = "Salinitas";
+        minValue = 0;
+        maxValue = 100;
+        step = 1;
         break;
-      case "kekeruhan":
+      case "turbidity":
         unit = "NTU";
         label = "Kekeruhan";
+        minValue = 0;
+        maxValue = 1000;
+        step = 1;
         break;
     }
 
     return Container(
       width: screenWidth * 0.9,
-      height: screenHeight * 0.6,
-      padding: EdgeInsets.only(
-        left: screenWidth * 0.05,  // 5% dari lebar layar
-        right: screenWidth * 0.05, // 5% dari lebar layar
-        bottom: screenHeight * 0.02, // 2% dari tinggi layar
-      ),
+      height: screenHeight * 0.7,
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.02),
       decoration: BoxDecoration(
         color: const Color(0x80D9DCD6),
         borderRadius: BorderRadius.circular(10),
@@ -64,78 +142,65 @@ class KolomPengaturanSensor extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Header
-          Container(
-            height: screenHeight * 0.06,
-            width: screenWidth * 0.5,
-            decoration: BoxDecoration(
-              color: const Color(0xFFD9DCD6),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              sensorName,
-              style: TextStyle(
-                fontSize: screenWidth * 0.055,
-                fontWeight: FontWeight.bold,
-                color: ColorConstant.primary,
-              ),
-            ),
-          ),
+          _buildHeader(screenWidth),
           SizedBox(height: screenHeight * 0.03),
 
           // Data Sensor
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildSensorData("$label \nSaat Ini", currentValue, unit, screenWidth),
-              _buildSensorData("$label \nTertinggi", highestValue, unit, screenWidth),
-              _buildSensorData("$label \nTerendah", lowestValue, unit, screenWidth),
+              _buildSensorData("$label \nSaat Ini", formatNumber(currentSensorValue), unit, screenWidth),
+              _buildSensorData("$label \nTertinggi", formatNumber(highestValue), unit, screenWidth),
+              _buildSensorData("$label \nTerendah", formatNumber(lowestValue), unit, screenWidth),
             ],
           ),
 
           SizedBox(height: screenHeight * 0.03),
-          _buildSettingBox("Tertinggi", initialHighValue, screenWidth, screenHeight),
-          SizedBox(height: screenHeight * 0.01),
-          _buildSettingBox("Terendah", initialLowValue, screenWidth, screenHeight),
 
+          if (tempHighValue != null && tempLowValue != null) ...[
+            _buildSettingBox("Tertinggi", tempHighValue!, minValue, maxValue, unit, recommendedHighValue, screenWidth, screenHeight, (value) {
+              setState(() {
+                tempHighValue = value;
+              });
+            }),
+            SizedBox(height: screenHeight * 0.01),
+            _buildSettingBox("Terendah", tempLowValue!, minValue, maxValue, unit, recommendedLowValue, screenWidth, screenHeight, (value) {
+              setState(() {
+                tempLowValue = value;
+              });
+            }),
+          ] else
+            CircularProgressIndicator(),
 
-          // Tombol Simpan
-          SizedBox(height: screenHeight * 0.01),
-          SizedBox(
-            width: double.infinity,
-            child: ButtonOutlined(
-              text: "Simpan",
-              onPressed: () {
-                // Implementasi penyimpanan parameter
-              },
-              isFullWidth: true,
-              borderColor: ColorConstant.primary,
-              textColor: ColorConstant.primary,
-            ),
-          ),
+          SizedBox(height: screenHeight * 0.02),
+          _buildSaveButton(),
 
           SizedBox(height: screenHeight * 0.015),
-
-          // Garis Pembatas
-          Container(
-            width: double.infinity,
-            height: 1,
-            color: Colors.white,
-            margin: EdgeInsets.symmetric(vertical: screenHeight * 0.005),
-          ),
-          ButtonText(
-            text: "Informasi Perangkat Sensor >>",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const InformasiSensor()),
-              );
-            },
-          ),
+          _buildInfoButton(context),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(double screenWidth) {
+    return Container(
+      height: 50,
+      width: screenWidth * 0.5,
+      decoration: BoxDecoration(
+        color: const Color(0xFFD9DCD6),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(8),
+          bottomRight: Radius.circular(8),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        widget.sensorName,
+        style: TextStyle(
+          fontSize: screenWidth * 0.055,
+          fontWeight: FontWeight.bold,
+          color: ColorConstant.primary,
+        ),
       ),
     );
   }
@@ -143,59 +208,28 @@ class KolomPengaturanSensor extends StatelessWidget {
   Widget _buildSensorData(String label, String value, String unit, double screenWidth) {
     return Column(
       children: [
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: screenWidth * 0.04,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          "$value $unit",
-          style: TextStyle(
-            fontSize: screenWidth * 0.065,
-            fontWeight: FontWeight.bold,
-            color: ColorConstant.primary,
-          ),
-        ),
+        Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text("$value $unit", style: TextStyle(fontSize: screenWidth * 0.065, fontWeight: FontWeight.bold, color: ColorConstant.primary)),
       ],
     );
   }
 
-  Widget _buildSettingBox(String label, int initialValue, double screenWidth, double screenHeight) {
-    double minValue = 0, maxValue = 100, step = 1;
-    String unit = "°C";
-    double recommendedValue = 32;
-    String labelText = "";
+  Widget _buildSettingBox(String label, double value, double minValue, double maxValue, String unit, double recommendedValue, double screenWidth, double screenHeight, Function(double) onChanged) {
+    double step = 1.0; // Default step value
 
-    switch (sensorType.toLowerCase()) {
+    // Menentukan step sesuai tipe sensor
+    switch (widget.sensorType.toLowerCase()) {
       case "ph":
-        minValue = 0;
-        maxValue = 14;
         step = 0.1;
-        unit = " pH";
-        recommendedValue = label == "Tertinggi" ? 7.5 : 6;
-        labelText = label == "Tertinggi" ? "pH Tertinggi" : "pH Terendah";
         break;
-      case "salinitas":
-        minValue = 0;
-        maxValue = 50;
-        unit = " ppt";
-        recommendedValue = label == "Tertinggi" ? 15 : 5;
-        labelText = label == "Tertinggi" ? "Salinitas Tertinggi" : "Salinitas Terendah";
+      case "salinity":
+        step = 1;
         break;
-      case "kekeruhan":
-        minValue = 0;
-        maxValue = 1000;
-        unit = " NTU";
-        recommendedValue = label == "Tertinggi" ? 20 : 10;
-        labelText = label == "Tertinggi" ? "Kekeruhan Tertinggi" : "Kekeruhan Terendah";
+      case "turbidity":
+        step = 1;
         break;
-      default:
-        recommendedValue = label == "Tertinggi" ? 32 : 26;
-        labelText = label == "Tertinggi" ? "Suhu Tertinggi" : "Suhu Terendah";
+      case "temperature":
+        step = 1;
         break;
     }
 
@@ -203,7 +237,7 @@ class KolomPengaturanSensor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          labelText,
+          "$label",
           style: TextStyle(
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.bold,
@@ -211,29 +245,51 @@ class KolomPengaturanSensor extends StatelessWidget {
           ),
         ),
         SizedBox(height: screenHeight * 0.005),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Text(
-                "Atur Batasan $labelText\nRekomendasi nilai: ${recommendedValue % 1 == 0 ? recommendedValue.toInt() : recommendedValue}$unit",
-                style: TextStyle(fontSize: screenWidth * 0.03, color: Colors.white),
+                "Atur batasan $label \nNilai rekomendasi: ${value % 1 == 0 ? value.toInt() : value}$unit",
+                style: TextStyle(
+                  fontSize: screenWidth * 0.03,
+                  color: Colors.white,
+                ),
               ),
             ),
             InputValue(
-              initialValue: initialValue.toDouble(),
+              initialValue: value,
               minValue: minValue,
               maxValue: maxValue,
               step: step,
               unit: unit,
-              onChanged: (value) {
-                print("$label: $value $unit");
-              },
+              onChanged: onChanged,
             ),
           ],
         ),
         SizedBox(height: screenHeight * 0.02),
       ],
+    );
+  }
+
+
+  Widget _buildSaveButton() {
+    return ButtonOutlined(
+      text: "Simpan",
+      onPressed: saveThresholdValues,
+      isFullWidth: true,
+      borderColor: ColorConstant.primary,
+      textColor: ColorConstant.primary,
+    );
+  }
+
+  Widget _buildInfoButton(BuildContext context) {
+    return ButtonText(
+      text: "Informasi Perangkat Sensor >>",
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => InformasiSensor(sensorType: widget.sensorType, pondId: widget.pondId, namePond: widget.namePond)));
+      },
     );
   }
 }

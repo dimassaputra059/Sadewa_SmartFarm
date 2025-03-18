@@ -4,22 +4,25 @@ import 'package:frontend_app/presentation/widget/button/button_outlined.dart';
 import 'package:frontend_app/presentation/widget/pop_up/popup_menu_kolam.dart';
 
 class TileKolam extends StatefulWidget {
+  final String pondId;
   final String pondName;
   final String status;
   final String date;
-  final Map<String, String> pondData;
-  final Function(Map<String, String>) onEdit;
+  final Map<String, dynamic> pondData;
+  final Function(Map<String, dynamic>) onEdit;
   final VoidCallback onDelete;
+  final bool showMenu;
 
   const TileKolam({
     super.key,
+    required this.pondId,
     required this.pondName,
     required this.status,
     required this.date,
     required this.pondData,
     required this.onEdit,
     required this.onDelete,
-    required bool showMenu,
+    this.showMenu = true,
   });
 
   @override
@@ -143,7 +146,9 @@ class _TileKolamState extends State<TileKolam> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Monitoring()),
+                    MaterialPageRoute(
+                      builder: (context) => Monitoring(pondId: widget.pondId, namePond: widget.pondName, ), // ✅ Tambahkan pondId
+                    ),
                   );
                 },
               ),

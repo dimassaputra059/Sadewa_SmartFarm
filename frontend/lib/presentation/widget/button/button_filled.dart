@@ -7,12 +7,14 @@ class ButtonFilled extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isFullWidth;
+  final bool enabled;
 
   const ButtonFilled({
     super.key,
     required this.text,
     required this.onPressed,
     this.isFullWidth = false,
+    this.enabled = true,
   });
 
   @override

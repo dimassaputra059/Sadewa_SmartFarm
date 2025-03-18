@@ -18,54 +18,53 @@ class TileProfile extends StatefulWidget {
 class _TileProfileState extends State<TileProfile> {
   bool isPressed = false; // State untuk mendeteksi apakah tombol ditekan
 
-  void _showProfileMenu(BuildContext context, RenderBox buttonBox) {
-    final buttonPosition = buttonBox.localToGlobal(Offset.zero);
-    final buttonWidth = buttonBox.size.width;
+  void _showProfileMenu(BuildContext context) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
 
-    showDialog(
-      context: context,
-      builder: (context) => PopupMenuProfile(
-        leftPosition: buttonPosition.dx,
-        topPosition: buttonPosition.dy + buttonBox.size.height + 5,
-        buttonWidth: buttonWidth,
-      ),
-    );
+    if (box == null) {
+      debugPrint("RenderBox tidak ditemukan!");
+      return;
+    }
+
+    final buttonPosition = box.localToGlobal(Offset.zero);
+    final buttonWidth = box.size.width;
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return; // Pastikan widget masih aktif sebelum menampilkan popup
+
+      showDialog(
+        context: context,
+        builder: (context) => PopupMenuProfile(
+          leftPosition: buttonPosition.dx,
+          topPosition: buttonPosition.dy + box.size.height + 5,
+          buttonWidth: buttonWidth,
+        ),
+      );
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          isPressed = true; // Ubah warna background menjadi 0xFF316B94 saat ditekan
-        });
-      },
+      onTapDown: (_) => setState(() => isPressed = true),
       onTapUp: (_) {
-        setState(() {
-          isPressed = false; // Kembalikan ke transparan setelah dilepas
-        });
-
-        RenderBox box = context.findRenderObject() as RenderBox;
-        _showProfileMenu(context, box);
+        setState(() => isPressed = false);
+        _showProfileMenu(context);
       },
-      onTapCancel: () {
-        setState(() {
-          isPressed = false; // Jika interaksi batal, kembalikan ke transparan
-        });
-      },
+      onTapCancel: () => setState(() => isPressed = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200), // Animasi smooth
+        duration: const Duration(milliseconds: 200),
         width: size.width * 0.45,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: isPressed ? const Color(0xFF316B94) : Colors.transparent, // Warna berubah saat ditekan
+          color: isPressed ? const Color(0xFF316B94) : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white, width: 1),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
               child: Image.asset(
@@ -76,28 +75,18 @@ class _TileProfileState extends State<TileProfile> {
               ),
             ),
             const SizedBox(width: 5),
-
-            // **Username & Role**
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.username,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     widget.role,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: Colors.white70),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

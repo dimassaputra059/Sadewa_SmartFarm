@@ -6,12 +6,14 @@ class InputPlaceholder extends StatefulWidget {
   final String label;
   final bool isPassword;
   final String? iconPath;
+  final TextEditingController controller;
 
   const InputPlaceholder({
     super.key,
     required this.label,
     this.isPassword = false,
     this.iconPath,
+    required this.controller,
   });
 
   @override
@@ -31,6 +33,7 @@ class _InputPlaceholderState extends State<InputPlaceholder> {
         SizedBox(
           height: size.height * 0.06 < 50 ? 50 : size.height * 0.06,
           child: TextField(
+            controller: widget.controller,
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w400, // Tidak italic
               fontSize: size.width * 0.04, // Sekitar 4% dari lebar layar

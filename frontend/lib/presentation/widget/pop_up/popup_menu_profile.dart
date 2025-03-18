@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend_app/presentation/pages/manajemen/profile/profile.dart';
 import 'package:frontend_app/presentation/pages/manajemen/profile/edit_profile.dart';
 import 'package:frontend_app/presentation/pages/autentikasi/login.dart';
+import 'package:frontend_app/server/api_service.dart';
+import '../../../main.dart';
+import 'custom_dialog_button.dart';
 
 class PopupMenuProfile extends StatelessWidget {
   final double leftPosition;
@@ -14,6 +17,26 @@ class PopupMenuProfile extends StatelessWidget {
     required this.topPosition,
     required this.buttonWidth,
   });
+
+  void _logout() async {
+    CustomDialogButton.show(
+      context: MyApp.navigatorKey.currentContext!,
+      title: "Konfirmasi Logout",
+      message: "Apakah Anda yakin ingin logout?",
+      confirmText: "Ya, Logout",
+      onConfirm: () async {
+
+        await ApiService.logout();
+
+        MyApp.navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Login()),
+              (route) => false,
+        );
+      },
+      cancelText: "Batal",
+      isWarning: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +70,8 @@ class PopupMenuProfile extends StatelessWidget {
                     color: Colors.blue,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Profile()),
+                      MyApp.navigatorKey.currentState?.push(
+                        MaterialPageRoute(builder: (context) => const Profile()),
                       );
                     },
                   ),
@@ -60,9 +82,8 @@ class PopupMenuProfile extends StatelessWidget {
                     color: Colors.green,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditProfile()),
+                      MyApp.navigatorKey.currentState?.push(
+                        MaterialPageRoute(builder: (context) => const EditProfile()),
                       );
                     },
                   ),
@@ -73,11 +94,7 @@ class PopupMenuProfile extends StatelessWidget {
                     color: Colors.red,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                            (route) => false,
-                      );
+                      _logout(); // Tampilkan dialog konfirmasi logout
                     },
                   ),
                 ],

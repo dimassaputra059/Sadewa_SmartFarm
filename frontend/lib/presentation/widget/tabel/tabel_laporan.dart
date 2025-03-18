@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../color/color_constant.dart';
+import '../../../server/api_service.dart';
 
 class LaporanTable extends StatefulWidget {
-  const LaporanTable({super.key});
+  final String id; // Menggunakan id sebagai parameter API
+
+  const LaporanTable({super.key, required this.id});
 
   @override
   _LaporanTableState createState() => _LaporanTableState();
@@ -12,89 +15,100 @@ class _LaporanTableState extends State<LaporanTable> {
   final ScrollController _horizontalController = ScrollController();
   final ScrollController _verticalController = ScrollController();
 
-  final List<Map<String, dynamic>> laporanData = [
-    {"waktu": "07:00", "suhu": 28.5, "ph": 7.2, "salinitas": 30, "kekeruhan": 5, "hujan": true},
-    {"waktu": "08:00", "suhu": 29.0, "ph": 7.3, "salinitas": 29, "kekeruhan": 6, "hujan": false},
-    {"waktu": "09:00", "suhu": 30.2, "ph": 7.1, "salinitas": 28, "kekeruhan": 7, "hujan": true},
-    {"waktu": "10:00", "suhu": 31.5, "ph": 7.4, "salinitas": 27, "kekeruhan": 8, "hujan": false},
-    {"waktu": "11:00", "suhu": 32.0, "ph": 7.5, "salinitas": 26, "kekeruhan": 10, "hujan": false},
-    {"waktu": "07:00", "suhu": 28.5, "ph": 7.2, "salinitas": 30, "kekeruhan": 5, "hujan": true},
-    {"waktu": "08:00", "suhu": 29.0, "ph": 7.3, "salinitas": 29, "kekeruhan": 6, "hujan": false},
-    {"waktu": "09:00", "suhu": 30.2, "ph": 7.1, "salinitas": 28, "kekeruhan": 7, "hujan": true},
-    {"waktu": "10:00", "suhu": 31.5, "ph": 7.4, "salinitas": 27, "kekeruhan": 8, "hujan": false},
-    {"waktu": "11:00", "suhu": 32.0, "ph": 7.5, "salinitas": 26, "kekeruhan": 10, "hujan": false},
-    {"waktu": "07:00", "suhu": 28.5, "ph": 7.2, "salinitas": 30, "kekeruhan": 5, "hujan": true},
-    {"waktu": "08:00", "suhu": 29.0, "ph": 7.3, "salinitas": 29, "kekeruhan": 6, "hujan": false},
-    {"waktu": "09:00", "suhu": 30.2, "ph": 7.1, "salinitas": 28, "kekeruhan": 7, "hujan": true},
-    {"waktu": "10:00", "suhu": 31.5, "ph": 7.4, "salinitas": 27, "kekeruhan": 8, "hujan": false},
-    {"waktu": "11:00", "suhu": 32.0, "ph": 7.5, "salinitas": 26, "kekeruhan": 10, "hujan": false},
-  ];
+  Future<List<Map<String, dynamic>>> _fetchLaporanData() async {
+    try {
+      if (widget.id.isEmpty) return []; // Cegah request jika id kosong
+
+      final response = await ApiService.getHistoryById(widget.id);
+      if (response != null && response["data"] is List) {
+        return (response["data"] as List)
+            .map((item) => {
+          "waktu": item["time"] ?? "-",
+          "suhu": (item["temperature"] as num?)?.toStringAsFixed(1) ?? "0.0",
+          "ph": (item["pH"] as num?)?.toStringAsFixed(1) ?? "0.0",
+          "salinitas": (item["salinity"] as num?)?.toStringAsFixed(1) ?? "0.0",
+          "kekeruhan": (item["turbidity"] as num?)?.toStringAsFixed(1) ?? "0.0",
+          "hujan": item["rain_status"] ?? false,
+        })
+            .toList();
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching data: $e");
+    }
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 475, // **Batas tinggi agar tidak error**
-      child: Scrollbar(
-        controller: _verticalController,
-        thumbVisibility: true,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          controller: _horizontalController,
-          child: Column(
-            children: [
-              // Header Table
-              Container(
-                color: ColorConstant.primary,
-                child: DataTable(
-                  border: TableBorder.all(color: Colors.grey.shade400),
-                  headingRowHeight: 50,
-                  columns: [
-                    _buildHeaderCell("Waktu", 40),
-                    _buildHeaderCell("Suhu \n(°C)", 30),
-                    _buildHeaderCell("pH", 30),
-                    _buildHeaderCell("Salinitas \n(ppt)", 50),
-                    _buildHeaderCell("Kekeruhan \n(NTU)", 65),
-                    _buildHeaderCell("Hujan", 40),
-                  ],
-                  rows: const [], // Header tanpa data
-                ),
-              ),
-              // Isi Table (Scrollable Vertikal)
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  controller: _verticalController,
-                  child: DataTable(
-                    border: TableBorder.all(color: Colors.grey.shade400),
-                    showCheckboxColumn: false,
-                    headingRowHeight: 0, // Header Kosong
-                    columns: [
-                      DataColumn(label: SizedBox(child: Text(''))),
-                      DataColumn(label: SizedBox(child: Text(''))),
-                      DataColumn(label: SizedBox(child: Text(''))),
-                      DataColumn(label: SizedBox(child: Text(''))),
-                      DataColumn(label: SizedBox(child: Text(''))),
-                      DataColumn(label: SizedBox(child: Text(''))),
-                    ],
-                    rows: laporanData.map((data) {
-                      return DataRow(
-                        color: WidgetStateColor.resolveWith((states) => Colors.white),
-                        cells: [
-                          _buildDataCell(data["waktu"], 40),
-                          _buildDataCell(data["suhu"].toString(), 30),
-                          _buildDataCell(data["ph"].toString(), 30),
-                          _buildDataCell(data["salinitas"].toString(), 50),
-                          _buildDataCell(data["kekeruhan"].toString(), 65),
-                          _buildDataCell(_convertHujanToText(data["hujan"]), 40),
-                        ],
-                      );
-                    }).toList(),
+      height: 475, // Menjaga batas tinggi agar tidak error
+      child: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _fetchLaporanData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Data tidak tersedia"));
+          }
+
+          List<Map<String, dynamic>> laporanData = snapshot.data!;
+
+          return Scrollbar(
+            controller: _verticalController,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _horizontalController,
+              child: Column(
+                children: [
+                  // Header Table
+                  Container(
+                    color: ColorConstant.primary,
+                    child: DataTable(
+                      border: TableBorder.all(color: Colors.grey.shade400),
+                      headingRowHeight: 50,
+                      columns: [
+                        _buildHeaderCell("Waktu", 50),
+                        _buildHeaderCell("Suhu \n(°C)", 40),
+                        _buildHeaderCell("pH", 30),
+                        _buildHeaderCell("Salinitas \n(ppt)", 50),
+                        _buildHeaderCell("Kekeruhan \n(NTU)", 65),
+                        _buildHeaderCell("Hujan", 40),
+                      ],
+                      rows: const [], // Header tanpa data
+                    ),
                   ),
-                ),
+                  // Isi Table (Scrollable Vertikal)
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      controller: _verticalController,
+                      child: DataTable(
+                        border: TableBorder.all(color: Colors.grey.shade400),
+                        showCheckboxColumn: false,
+                        headingRowHeight: 0, // Header Kosong
+                        columns: List.generate(6, (index) => const DataColumn(label: SizedBox())),
+                        rows: laporanData.map((data) {
+                          return DataRow(
+                            color: WidgetStateColor.resolveWith((states) => Colors.white),
+                            cells: [
+                              _buildDataCell(data["waktu"], 50),
+                              _buildDataCell(data["suhu"], 40),
+                              _buildDataCell(data["ph"], 30),
+                              _buildDataCell(data["salinitas"], 50),
+                              _buildDataCell(data["kekeruhan"], 65),
+                              _buildDataCell(_convertHujanToText(data["hujan"]), 40),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

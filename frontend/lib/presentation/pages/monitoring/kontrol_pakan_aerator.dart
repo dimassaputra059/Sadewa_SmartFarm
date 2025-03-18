@@ -9,7 +9,10 @@ import 'monitoirng_sensor/monitoring.dart';
 import 'notifikasi.dart';
 
 class KontrolPakanAerator extends StatelessWidget {
-  const KontrolPakanAerator({super.key});
+  final String pondId;
+  final String namePond;
+
+  const KontrolPakanAerator({super.key, required this.pondId, required this.namePond}); // ✅ Pastikan pondId bersifat required
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +23,7 @@ class KontrolPakanAerator extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
@@ -32,10 +36,10 @@ class KontrolPakanAerator extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
-                    KontrolPakan(),
-                    SizedBox(height: 24),
-                    KontrolAerator(),
+                  children: [
+                    KontrolPakan(pondId: pondId), // ✅ Pastikan pondId dikirim
+                    const SizedBox(height: 24),
+                    KontrolAerator(pondId: pondId), // ✅ Pastikan pondId dikirim
                   ],
                 ),
               ),
@@ -53,19 +57,19 @@ class KontrolPakanAerator extends StatelessWidget {
                 if (index == 0) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Monitoring()),
+                    MaterialPageRoute(builder: (context) => Monitoring(pondId: pondId, namePond: namePond)), // ✅ Kirim pondId ke Monitoring
                   );
                 }
                 else if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
+                    MaterialPageRoute(builder: (context) => RiwayatKualitasAir(pondId: pondId, namePond: namePond)), // ✅ Kirim pondId ke Riwayat
                   );
                 }
-                else if (index == 2){
+                else if (index == 2) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Notifikasi()),
+                    MaterialPageRoute(builder: (context) => Notifikasi(pondId: pondId, namePond: namePond)), // ✅ Kirim pondId ke Notifikasi
                   );
                 }
               },

@@ -5,54 +5,60 @@ import 'package:google_fonts/google_fonts.dart';
 class InputStandart extends StatelessWidget {
   final String label;
   final bool isPassword;
+  final TextEditingController? controller; // Tambahkan controller
 
-  const InputStandart({super.key, required this.label, this.isPassword = false});
+  const InputStandart({
+    super.key,
+    required this.label,
+    this.isPassword = false,
+    this.controller, // Parameter controller
+  });
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Ambil ukuran layar
+    final size = MediaQuery.of(context).size;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // **Label teks di atas input (responsif)**
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: size.width * 0.04, // Sekitar 4.5% dari lebar layar
-            fontWeight: FontWeight.w600, // SemiBold
-            color: Colors.white, // Warna teks label
+            fontSize: size.width * 0.04,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
-        const Gap(8), // Jarak antara label dan input field
-
-        // **Input field dengan tinggi responsif (minimal 40)**
+        const Gap(8),
         SizedBox(
           height: size.height * 0.05 < 40 ? 40 : size.height * 0.05,
           child: TextField(
+            controller: controller, // Gunakan controller di sini
             style: GoogleFonts.poppins(
-              fontSize: size.width * 0.04, // Sekitar 4% dari lebar layar
-              color: Colors.white, // Warna teks dalam input
+              fontSize: size.width * 0.04,
+              color: Colors.white,
             ),
-            obscureText: isPassword, // Menyembunyikan teks jika isPassword = true
+            obscureText: isPassword,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
-                  vertical: size.height * 0.012, horizontal: size.width * 0.03), // Padding responsif
-              fillColor: Colors.transparent, // Background transparan
+                vertical: size.height * 0.012,
+                horizontal: size.width * 0.03,
+              ),
+              fillColor: Colors.transparent,
               filled: true,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(size.width * 0.025), // Border melengkung responsif
-                borderSide: const BorderSide(color: Colors.white), // Warna border default (Putih)
+                borderRadius: BorderRadius.circular(size.width * 0.025),
+                borderSide: const BorderSide(color: Colors.white),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(size.width * 0.025),
-                borderSide: const BorderSide(color: Color(0xFF3A7CA5)), // Warna border saat fokus
+                borderSide: const BorderSide(color: Color(0xFF3A7CA5)),
               ),
             ),
-            cursorColor: Colors.white, // Warna kursor
+            cursorColor: Colors.white,
           ),
         ),
-        const Gap(20), // Jarak setelah input field
+        const Gap(20),
       ],
     );
   }

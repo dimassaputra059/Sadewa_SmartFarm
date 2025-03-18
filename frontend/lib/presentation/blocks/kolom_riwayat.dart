@@ -1,59 +1,104 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../color/color_constant.dart';
-import 'list_riwayat_tambak.dart';
+import '../../server/api_service.dart';
 import '../widget/input/input_date.dart';
+import 'list_riwayat_tambak.dart';
 
 class KolomRiwayat extends StatefulWidget {
-  const KolomRiwayat({super.key});
+  final String namePond;
+  final String pondId;
+
+
+  const KolomRiwayat({super.key, required this.pondId, required this.namePond});
 
   @override
   _KolomRiwayatState createState() => _KolomRiwayatState();
 }
 
 class _KolomRiwayatState extends State<KolomRiwayat> {
-  int currentPage = 1;
-  final int itemsPerPage = 7; // Jumlah item per halaman
-  final List<String> allDates = List.generate(20, (index) =>
-  "${(6 + index).toString().padLeft(2, '0')}/02/2025"); // Simulasi data
-
-  List<String> filteredDates = []; // Data yang sudah difilter
-  String? selectedDate; // Tanggal yang dipilih user
+  int _currentPage = 0;
+  final int itemsPerPage = 7;
+  List<Map<String, dynamic>> historyData = []; // Semua data dari API
+  List<Map<String, dynamic>> filteredData = []; // Data setelah difilter
+  bool isLoading = true;
+  bool isFiltered = false; // Untuk menentukan apakah sedang dalam mode filter
+  String? selectedDate;
 
   @override
   void initState() {
     super.initState();
-    filteredDates = List.from(allDates); // Awalnya tampilkan semua data
+    _fetchHistory(); // Ambil data saat widget dimuat
   }
 
-  void _filterData(DateTime date) {
+  // ✅ Ambil Data Riwayat dari API
+  Future<void> _fetchHistory() async {
     setState(() {
-      selectedDate = "${date.day.toString().padLeft(2, '0')}/"
-          "${date.month.toString().padLeft(2, '0')}/"
-          "${date.year}";
+      isLoading = true;
+    });
 
-      // **Filter hanya data yang sesuai dengan tanggal yang dipilih**
-      filteredDates = allDates.where((d) => d == selectedDate).toList();
+    List<dynamic>? response = await ApiService.getHistoryByPond(widget.pondId);
+
+    setState(() {
+      if (response != null && response.isNotEmpty) {
+        historyData = response.map((item) {
+          DateTime parsedDate = DateTime.parse(item["date"]);
+          String formattedDate =
+              "${parsedDate.day.toString().padLeft(2, '0')}/"
+              "${parsedDate.month.toString().padLeft(2, '0')}/"
+              "${parsedDate.year}";
+
+          return {
+            "id": item["_id"],
+            "date": formattedDate,
+            "data": item["data"],
+          };
+        }).toList();
+        filteredData = List.from(historyData);
+      }
+      isLoading = false;
+    });
+  }
+
+  // ✅ Filter Data Berdasarkan Tanggal
+  void _filterData(DateTime date) {
+    String formattedDate =
+        "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+
+    List<Map<String, dynamic>> tempFiltered =
+    historyData.where((item) => item["date"] == formattedDate).toList();
+
+    setState(() {
+      selectedDate = formattedDate;
+      filteredData = tempFiltered;
+      isFiltered = true;
+      _currentPage = 0;
+    });
+  }
+
+  // ✅ Reset Data ke Semua Data
+  void _resetFilter() {
+    setState(() {
+      filteredData = List.from(historyData);
+      selectedDate = null;
+      isFiltered = false;
+      _currentPage = 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    int totalPages = (filteredDates.length / itemsPerPage).ceil();
-    List<String> displayedData = filteredDates
-        .skip((currentPage - 1) * itemsPerPage)
-        .take(itemsPerPage)
-        .toList();
+    int totalPages = (filteredData.length / itemsPerPage).ceil();
+    List<Map<String, dynamic>> displayedData =
+    filteredData.skip(_currentPage * itemsPerPage).take(itemsPerPage).toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
         double screenWidth = constraints.maxWidth;
-        double fontSize = screenWidth < 350 ? 14 : 16;
-        double iconSize = screenWidth < 350 ? 18 : 20;
         double paddingSize = screenWidth < 350 ? 12.0 : 15.0;
 
         return Container(
-          padding: EdgeInsets.only(top: paddingSize * 1.5, left: paddingSize, right: paddingSize),
+          padding: EdgeInsets.only(
+              top: paddingSize * 1.5, left: paddingSize, right: paddingSize),
           decoration: BoxDecoration(
             color: const Color(0x80D9DCD6),
             borderRadius: BorderRadius.circular(10),
@@ -61,100 +106,132 @@ class _KolomRiwayatState extends State<KolomRiwayat> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // **Input Tanggal Tanpa Tombol Cari**
+              // ✅ Input Tanggal dengan Icon Reset (X)
               Row(
                 children: [
                   Text(
-                    "Cari Data Tambak :  ",
+                    "Cari Laporan :  ",
                     style: TextStyle(
-                      fontSize: fontSize,
+                      fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: ColorConstant.primary,
                     ),
                   ),
-                  const SizedBox(width: 1),
-                  Expanded(child: InputDate(onDateSelected: _filterData)),
-                ],
-              ),
-              const SizedBox(height: 15),
-
-              // **Cek apakah data tersedia**
-              filteredDates.isEmpty
-                  ? Center(
-                child: Text(
-                  "Data tidak ditemukan",
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w500,
-                    color: ColorConstant.primary,
-                  ),
-                ),
-              )
-                  : Column(
-                children: [
-                  // **List Data dengan Divider**
                   SizedBox(
-                    height: itemsPerPage * 60, // Responsif tinggi daftar data
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(), // Hindari scrolling dalam scrolling
-                      itemCount: displayedData.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            ListRiwayatTambak(
-                              date: displayedData[index],
-                              onDetailPressed: () {},
-                              onDownloadPressed: () {},
-                            ),
-                            if (index < displayedData.length )
-                              const Divider(), // Divider hanya untuk item yang bukan terakhir
-                          ],
-                        );
-                      },
+                    width: screenWidth * 0.6,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        InputDate(
+                          onDateSelected: _filterData,
+                          onReset: _resetFilter, // ✅ Reset filter jika tombol X ditekan
+                          showCalendarIcon: !isFiltered,
+                        ),
+                      ],
                     ),
                   ),
+                ],
+              ),
 
-                  const SizedBox(height: 5),
+              const SizedBox(height: 15),
 
-                  // **Navigasi Halaman (Pagination)**
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              // ✅ Loader jika sedang mengambil data
+              if (isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (historyData.isEmpty)
+                Container(
+                  alignment: Alignment.center, // ✅ Menjadikan teks center
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  child: Text(
+                    "Belum ada Laporan Riwayat Kualitas Air",
+                    textAlign: TextAlign.center, // ✅ Pastikan teks di tengah jika ada lebih dari satu baris
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: Column(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.chevron_left, color: const Color(0xFF16425B), size: iconSize),
-                        onPressed: currentPage > 1
-                            ? () => setState(() => currentPage--)
-                            : null,
+                      Expanded(
+                        child: displayedData.isEmpty
+                            ? Container(
+                          alignment: Alignment.center, // ✅ Menjadikan teks center
+                          padding: const EdgeInsets.symmetric(vertical: 50),
+                          child: Text(
+                            "Laporan Riwayat Kualitas Air pada Tanggal ${selectedDate ?? ""} tidak tersedia",
+                            textAlign: TextAlign.center, // ✅ Pastikan teks di tengah jika ada lebih dari satu baris
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                            : ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: displayedData.length,
+                          itemBuilder: (context, index) {
+                            var historyItem = displayedData[index];
+
+                            return Column(
+                              children: [
+                                ListRiwayatTambak(
+                                  id: historyItem["id"],
+                                  namePond: widget.namePond,
+                                  date: historyItem["date"],
+                                  onDownloadPressed: () {},
+                                  pondId: widget.pondId,
+                                ),
+                                if ((index + 1) % itemsPerPage != 0) // ✅ Tidak menambahkan divider pada item terakhir di halaman
+                                  const Divider(color: Colors.white, thickness: 1),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                      ...List.generate(totalPages, (index) {
-                        int pageNumber = index + 1;
-                        return GestureDetector(
-                          onTap: () => setState(() => currentPage = pageNumber),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: screenWidth < 350 ? 5.0 : 8.0),
+
+                      // ✅ Divider selalu di atas Pagination
+                      const Divider(color: Colors.white, thickness: 1),
+
+                      // ✅ Pagination (tetap muncul meskipun data kosong)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.chevron_left,
+                                color: Color(0xFF16425B), size: 30),
+                            onPressed: _currentPage > 0
+                                ? () => setState(() => _currentPage--)
+                                : null,
+                          ),
+                          Container(
+                            width: 50,
+                            alignment: Alignment.center,
                             child: Text(
-                              "$pageNumber",
-                              style: GoogleFonts.inter(
-                                fontSize: fontSize,
-                                fontWeight: FontWeight.w500,
-                                color: pageNumber == currentPage
-                                    ? Colors.blue
-                                    : const Color(0xFF16425B),
+                              "${_currentPage + 1} / ${totalPages == 0 ? 1 : totalPages}",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
                               ),
                             ),
                           ),
-                        );
-                      }),
-                      IconButton(
-                        icon: Icon(Icons.chevron_right, color: const Color(0xFF16425B), size: iconSize),
-                        onPressed: currentPage < totalPages
-                            ? () => setState(() => currentPage++)
-                            : null,
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right,
+                                color: Color(0xFF16425B), size: 30),
+                            onPressed: _currentPage < totalPages - 1
+                                ? () => setState(() => _currentPage++)
+                                : null,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
             ],
           ),
         );

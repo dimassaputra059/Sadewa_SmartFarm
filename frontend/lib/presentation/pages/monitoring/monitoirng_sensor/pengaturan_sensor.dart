@@ -8,36 +8,32 @@ import '../kontrol_pakan_aerator.dart';
 import '../notifikasi.dart';
 
 class PengaturanSensor extends StatelessWidget {
+  final String pondId;
+  final String namePond;
   final String sensorName;
   final String currentValue;
-  final String highestValue;
-  final String lowestValue;
-  final int initialHighValue;
-  final int initialLowValue;
 
   const PengaturanSensor({
     super.key,
+    required this.pondId,
     required this.sensorName,
     required this.currentValue,
-    required this.highestValue,
-    required this.lowestValue,
-    required this.initialHighValue,
-    required this.initialLowValue,
+    required this.namePond,
   });
 
-  // Fungsi untuk menentukan tipe sensor berdasarkan nama sensor
-  String getSensorType() {
-    switch (sensorName.toLowerCase()) {
+  // 🔹 Fungsi untuk menentukan sensorType berdasarkan sensorName
+  String getSensorType(String sensorName) {
+    switch (sensorName.toLowerCase()) { // Ubah input ke huruf kecil untuk memudahkan perbandingan
       case "sensor suhu":
-        return "suhu";
+        return "temperature"; // Sesuai dengan Firebase
       case "sensor ph":
-        return "ph";
+        return "ph"; // Perhatikan huruf besar "pH"
       case "sensor salinitas":
-        return "salinitas";
+        return "salinity"; // Sesuai dengan Firebase
       case "sensor kekeruhan":
-        return "kekeruhan";
+        return "turbidity"; // Sesuai dengan Firebase
       default:
-        return "";
+        return ""; // Jika tidak cocok, kembalikan string kosong
     }
   }
 
@@ -48,6 +44,7 @@ class PengaturanSensor extends StatelessWidget {
         title: "Pengaturan - $sensorName",
         onBackPress: () => Navigator.pop(context),
       ),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
@@ -55,15 +52,11 @@ class PengaturanSensor extends StatelessWidget {
           // **Widget untuk Menampilkan dan Mengedit Parameter Sensor**
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 30.0),
-
             child: KolomPengaturanSensor(
+              pondId: pondId,
               sensorName: sensorName,
-              sensorType: getSensorType(), // Otomatis menyesuaikan sensorType
-              currentValue: currentValue,
-              highestValue: highestValue,
-              lowestValue: lowestValue,
-              initialHighValue: initialHighValue,
-              initialLowValue: initialLowValue,
+              sensorType: getSensorType(sensorName),
+              namePond: namePond, //
             ),
           ),
 
@@ -78,17 +71,17 @@ class PengaturanSensor extends StatelessWidget {
                 if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
+                    MaterialPageRoute(builder: (context) => RiwayatKualitasAir(pondId: pondId, namePond: namePond)),
                   );
                 } else if (index == 2) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Notifikasi()),
+                    MaterialPageRoute(builder: (context) => Notifikasi(pondId: pondId, namePond: namePond)),
                   );
                 } else if (index == 3) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const KontrolPakanAerator()),
+                    MaterialPageRoute(builder: (context) => KontrolPakanAerator(pondId: pondId, namePond: namePond)),
                   );
                 }
               },

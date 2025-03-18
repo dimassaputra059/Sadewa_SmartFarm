@@ -4,11 +4,23 @@ import '../../widget/background_widget.dart';
 import '../../widget/button/button_add.dart';
 import '../../widget/navigation/navigasi_beranda.dart';
 import '../../blocks/main_header.dart';
-import '../../widget/tabel/tabel_user.dart';
+import '../../widget/tabel/tabel_manajemen_user.dart';
 import 'beranda.dart';
 
-class ManajemenUser extends StatelessWidget {
+class ManajemenUser extends StatefulWidget {
   const ManajemenUser({super.key});
+
+  @override
+  State<ManajemenUser> createState() => _ManajemenUserState();
+}
+
+class _ManajemenUserState extends State<ManajemenUser> {
+  final GlobalKey<UserManagementTableState> _tableKey = GlobalKey();
+
+  /// ✅ **Method untuk refresh tabel setelah user ditambah**
+  void _refreshUserTable() {
+    _tableKey.currentState?.refreshData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +28,7 @@ class ManajemenUser extends StatelessWidget {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
@@ -45,7 +58,9 @@ class ManajemenUser extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const TambahUser(),
+                              builder: (context) => TambahUser(
+                                onUserAdded: _refreshUserTable, // ✅ Refresh tabel setelah tambah user
+                              ),
                             ),
                           );
                         },
@@ -55,16 +70,16 @@ class ManajemenUser extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
-                // Tabel User dalam Expanded agar tidak tertutup
+                // 🔹 Tabel User dalam Expanded agar tidak tertutup
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: Colors.white.withAlpha(50), // Warna semi transparan
+                        color: Colors.transparent,
                       ),
-                      child: const UserManagementTable(), // Menggunakan tabel tanpa parameter users
+                      child: UserManagementTable(key: _tableKey), // ✅ Gunakan GlobalKey
                     ),
                   ),
                 ),

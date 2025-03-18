@@ -40,7 +40,7 @@ class _NavigasiBerandaUserState extends State<NavigasiBerandaUser> {
   }
 
   Widget _buildNavItem({required int index, required String iconPath, required double iconSize}) {
-    bool isSelected = widget.selectedIndex == index;
+    //bool isSelected = widget.selectedIndex == index;
 
     return GestureDetector(
       onTap: () => widget.onTap(index), // Navigasi saat diklik

@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
+import '../../../../server/api_service.dart';
 import '../../../widget/background_widget.dart';
 import '../../../widget/navigation/app_bar_widget.dart';
 import '../../../blocks/info_profile.dart';
-import '../../../widget/button/button_filled.dart';
-import 'edit_profile.dart';
-import '../../autentikasi/login.dart'; // Import FilledButtonWidget
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({super.key});
 
   @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final data = await ApiService.getProfile();
+    setState(() {
+      userData = data;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Untuk responsivitas
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBarWidget(
@@ -20,16 +38,18 @@ class Profile extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
 
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
+            child: userData == null
+                ? const Center(child: CircularProgressIndicator()) // Loading Indicator
+                : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // **Judul Info Pengguna**
                 Text(
                   "Info Pengguna",
                   style: TextStyle(
@@ -40,14 +60,13 @@ class Profile extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // **Daftar Info User**
-                InfoProfile(label: "Username", info: "OwnerTambak"),
+                InfoProfile(label: "Username", info: userData?["username"] ?? "N/A"),
                 const SizedBox(height: 12),
-                InfoProfile(label: "Email", info: "OwnerTambak@gmail.com"),
+                InfoProfile(label: "Email", info: userData?["email"] ?? "N/A"),
                 const SizedBox(height: 12),
-                InfoProfile(label: "Role", info: "Admin"),
+                InfoProfile(label: "Role", info: userData?["role"] ?? "N/A"),
                 const SizedBox(height: 12),
-                InfoProfile(label: "Tanggal Daftar", info: "06/02/2025"),
+                InfoProfile(label: "Tanggal Daftar", info: userData?["createdAt"]?.substring(0, 10) ?? "N/A"),
               ],
             ),
           ),

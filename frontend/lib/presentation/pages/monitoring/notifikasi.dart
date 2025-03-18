@@ -8,7 +8,10 @@ import '../../widget/navigation/app_bar_widget.dart';
 import '../../blocks/kolom_notifikasi.dart'; // Import NotifikasiWidget
 
 class Notifikasi extends StatelessWidget {
-  const Notifikasi({super.key});
+  final String pondId;
+  final String namePond;
+
+  const Notifikasi({super.key, required this.pondId, required this.namePond});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class Notifikasi extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
@@ -35,7 +39,7 @@ class Notifikasi extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                  child: KolomNotifikasi(), // Dibungkus dengan Expanded agar sesuai dengan tata letak
+                  child: KolomNotifikasi(pondId: pondId), // Dibungkus dengan Expanded agar sesuai dengan tata letak
                 ),
               ],
             ),
@@ -52,17 +56,17 @@ class Notifikasi extends StatelessWidget {
                 if (index == 0) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Monitoring()),
+                    MaterialPageRoute(builder: (context) => Monitoring(pondId: pondId, namePond: namePond)), // ✅ Kirim pondId
                   );
                 } else if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
+                    MaterialPageRoute(builder: (context) => RiwayatKualitasAir(pondId: pondId, namePond: namePond)), // ✅ Kirim pondId
                   );
                 } else if (index == 3) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const KontrolPakanAerator()),
+                    MaterialPageRoute(builder: (context) => KontrolPakanAerator(pondId: pondId, namePond: namePond)), // ✅ Tanpa const
                   );
                 }
               },

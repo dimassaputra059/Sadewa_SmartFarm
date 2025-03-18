@@ -8,12 +8,19 @@ import '../kontrol_pakan_aerator.dart';
 import '../notifikasi.dart';
 
 class InformasiSensor extends StatelessWidget {
-  const InformasiSensor({super.key});
+  final String sensorType;
+  final String pondId;
+  final String namePond;
+
+  const InformasiSensor({super.key, required this.sensorType, required this.pondId, required this.namePond});
 
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
+
+    // 🔹 Data Sensor berdasarkan jenisnya
+    final sensorData = getSensorData(sensorType);
 
     return Scaffold(
       appBar: AppBarWidget(
@@ -22,6 +29,7 @@ class InformasiSensor extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           const BackgroundWidget(),
@@ -31,27 +39,20 @@ class InformasiSensor extends StatelessWidget {
             top: screenHeight * 0.0,
             left: screenWidth * 0.06,
             right: screenWidth * 0.06,
-            bottom: screenHeight * 0.10, // Batas bawah agar tidak tertutup navigasi
+            bottom: screenHeight * 0.10,
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
                   KolomInformasiSensor(
-                    sensorTitle: "Sensor Suhu",
-                    imagePath: "assets/images/Sensor-Suhu.jpg",
-                    description:
-                    "DS18B20 adalah sensor berbentuk probe yang dirancang untuk mengukur suhu dalam air. Sensor ini memiliki fitur tahan air (waterproof), sehingga sangat ideal untuk digunakan dalam pemantauan suhu air secara akurat.",
-                    specifications: [
-                      "Tegangan Operasi: 3 - 5.5VDC",
-                      "Jenis Sensor: Dallas DS18B20",
-                      "Jenis Output: Digital",
-                      "Rentang Suhu: -55°C hingga +125°C"
-                    ],
-                    optimalRange:
-                    "Udang tumbuh optimal pada suhu air antara 28°C hingga 32°C dan memiliki toleransi antara 26°C hingga 35°C.",
+                    sensorTitle: sensorData["title"] ?? "Sensor Tidak Diketahui",
+                    imagePath: sensorData["image"] ?? "assets/images/default-sensor.jpg",
+                    description: sensorData["description"] ?? "Informasi sensor tidak tersedia.",
+                    specifications: List<String>.from(sensorData["specifications"] ?? []),
+                    optimalRange: sensorData["optimalRange"] ?? "Tidak ada data rentang optimal.",
                   ),
-                  const SizedBox(height: 20), // Jarak di bawah agar tidak tertutup navigasi
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -68,17 +69,17 @@ class InformasiSensor extends StatelessWidget {
                 if (index == 1) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const RiwayatKualitasAir()),
+                    MaterialPageRoute(builder: (context) => RiwayatKualitasAir(pondId: pondId, namePond: namePond)),
                   );
                 } else if (index == 2) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Notifikasi()),
+                    MaterialPageRoute(builder: (context) => Notifikasi(pondId: pondId, namePond: namePond)),
                   );
                 } else if (index == 3) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const KontrolPakanAerator()),
+                    MaterialPageRoute(builder: (context) => KontrolPakanAerator(pondId: pondId, namePond: namePond)),
                   );
                 }
               },
@@ -87,5 +88,71 @@ class InformasiSensor extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // 🔹 Fungsi untuk mendapatkan data sensor berdasarkan sensorType
+  Map<String, dynamic> getSensorData(String sensorType) {
+    Map<String, Map<String, dynamic>> sensorInfo = {
+      "temperature": {
+        "title": "Sensor Suhu",
+        "image": "assets/images/Sensor-Suhu.jpg",
+        "description":
+        "DS18B20 adalah sensor berbentuk probe yang dirancang untuk mengukur suhu dalam air. Sensor ini memiliki fitur tahan air (waterproof), sehingga sangat ideal untuk digunakan dalam pemantauan suhu air secara akurat.",
+        "specifications": <String>[
+          "Tegangan Operasi: 3 - 5.5VDC",
+          "Jenis Sensor: Dallas DS18B20",
+          "Jenis Output: Digital",
+          "Rentang Suhu: -55°C hingga +125°C"
+        ],
+        "optimalRange": "Udang tumbuh optimal pada suhu air antara 28°C hingga 32°C dan memiliki toleransi antara 26°C hingga 35°C.",
+      },
+      "ph": {
+        "title": "Sensor pH",
+        "image": "assets/images/Sensor-pH.jpg",
+        "description":
+        "Sensor pH digunakan untuk mengukur tingkat keasaman atau kebasaan dalam air. pH air sangat penting dalam budidaya perikanan untuk memastikan lingkungan yang sehat bagi organisme akuatik.",
+        "specifications": <String>[
+          "Tegangan Operasi: 5VDC",
+          "Rentang pH: 0 - 14",
+          "Jenis Output: Analog",
+          "Akurasi: ±0.1 pH"
+        ],
+        "optimalRange": "Udang membutuhkan pH antara 7.5 hingga 8.5 untuk pertumbuhan yang optimal.",
+      },
+      "salinity": {
+        "title": "Sensor Salinitas",
+        "image": "assets/images/Sensor-Salinitas.png",
+        "description":
+        "Sensor salinitas digunakan untuk mengukur kadar garam dalam air. Salinitas yang stabil sangat penting untuk budidaya udang dan ikan laut.",
+        "specifications": <String>[
+          "Tegangan Operasi: 3.3V - 5VDC",
+          "Rentang Salinitas: 0 - 40 ppt",
+          "Jenis Output: Analog",
+          "Akurasi: ±1% dari rentang pengukuran"
+        ],
+        "optimalRange": "Udang vannamei tumbuh optimal pada salinitas antara 15 - 25 ppt.",
+      },
+      "turbidity": {
+        "title": "Sensor Kekeruhan",
+        "image": "assets/images/Sensor-Turbidity.jpg",
+        "description":
+        "Sensor kekeruhan digunakan untuk mengukur tingkat kejernihan air dengan mendeteksi jumlah partikel tersuspensi di dalamnya.",
+        "specifications": <String>[
+          "Tegangan Operasi: 5VDC",
+          "Rentang Kekeruhan: 0 - 1000 NTU",
+          "Jenis Output: Analog",
+          "Akurasi: ±2% dari rentang pengukuran"
+        ],
+        "optimalRange": "Tingkat kekeruhan air yang aman untuk budidaya udang berkisar antara 30 - 80 NTU.",
+      },
+    };
+
+    return sensorInfo[sensorType] ?? {
+      "title": "Sensor Tidak Diketahui",
+      "image": "assets/images/default-sensor.jpg",
+      "description": "Sensor ini belum terdaftar dalam sistem.",
+      "specifications": <String>[],
+      "optimalRange": "",
+    };
   }
 }
