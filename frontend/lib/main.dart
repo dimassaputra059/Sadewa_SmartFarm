@@ -130,5 +130,3 @@ void showLocalNotification(String title, String body) {
   var notificationDetails = NotificationDetails(android: androidDetails);
   flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails);
 }
-
-

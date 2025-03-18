@@ -6,7 +6,7 @@ class CustomDialog {
     required BuildContext context,
     required bool isSuccess,
     String? message,
-    Duration duration = const Duration(seconds: 2),
+    Duration duration = const Duration(seconds: 3),
     VoidCallback? onComplete,
   }) {
     showDialog(

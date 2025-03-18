@@ -69,7 +69,7 @@ const collectDataFromFirebase = async () => {
 			const historyData = {
 				time,
 				temperature,
-				pH,
+				ph,
 				salinity,
 				turbidity,
 				rain_status, // ✅ Menyimpan status hujan
@@ -123,21 +123,23 @@ const saveDailyHistory = async () => {
 
 const deleteOldHistory = async () => {
 	try {
-		const oneMonthAgo = new Date();
-		oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+		const now = new Date();
+		const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1)); // ✅ Perbaiki cara menghitung
 
-		console.log("🗑️ Menghapus riwayat lebih dari 1 bulan...");
+		console.log(`🗑️ Menghapus riwayat sebelum: ${oneMonthAgo.toISOString()}`);
 
 		const result = await History.deleteMany({
 			created_at: {
 				$lt: oneMonthAgo
-			} // Gunakan `created_at`, bukan `date`
+			} // ✅ Pastikan format benar
 		});
+
 		console.log(`✅ Riwayat lama yang dihapus: ${result.deletedCount}`);
 	} catch (error) {
 		console.error("❌ Gagal menghapus riwayat lama:", error.message);
 	}
 };
+
 
 // ✅ Cron job untuk mengambil data dari Firebase setiap 15 menit
 cron.schedule("*/15 * * * *", async () => {
@@ -147,24 +149,23 @@ cron.schedule("*/15 * * * *", async () => {
 	scheduled: true,
 	timezone: "Asia/Jakarta",
 });
-
-// ✅ Cron job untuk menyimpan laporan harian ke MongoDB setiap tengah malam
 cron.schedule("0 0 * * *", async () => {
-	console.log("⏳ Menyimpan laporan harian...");
-	await saveDailyHistory();
+	console.log("⏳ Menyimpan laporan harian dan menghapus riwayat lama...");
+
+	try {
+		await saveDailyHistory(); // ✅ Simpan laporan harian dulu
+		console.log("✅ Laporan harian berhasil disimpan.");
+
+		await deleteOldHistory(); // ✅ Hapus riwayat lebih dari 1 bulan
+		console.log("✅ Riwayat lama berhasil dihapus.");
+	} catch (error) {
+		console.error("❌ Terjadi kesalahan dalam proses cron job:", error.message);
+	}
 }, {
 	scheduled: true,
 	timezone: "Asia/Jakarta",
 });
 
-// ✅ Cron job untuk menghapus riwayat lebih dari 1 bulan setiap tengah malam
-cron.schedule("0 0 * * *", async () => {
-	console.log("⏳ Menghapus riwayat lama...");
-	await deleteOldHistory();
-}, {
-	scheduled: true,
-	timezone: "Asia/Jakarta",
-});
 
 module.exports = {
 	getHistoryByPond,
