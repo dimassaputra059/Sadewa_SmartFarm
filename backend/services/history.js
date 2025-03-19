@@ -60,7 +60,7 @@ const collectDataFromFirebase = async () => {
 			// ✅ Hanya mengambil data sensor yang diperlukan
 			const {
 				temperature,
-				pH,
+				ph,
 				salinity,
 				turbidity,
 				rain_status
